@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "401000349299",
+    "project_id": "advertisementapp-5dae6",
+    "storage_bucket": "advertisementapp-5dae6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:401000349299:android:adafbdc5a7b36e8a417406",
+        "android_client_info": {
+          "package_name": "ua.olehkv.coursework"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfyXJzUU89bhshNNdCjvXHQ19txgThO0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
