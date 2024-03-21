@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">CourseWork</string>
+    <!-- Menu drawer strings -->
+    <string name="ad_cat1">Advertisements</string>
+    <string name="ad_my_ads">My ads</string>
+    <string name="ad_car">Cars</string>
+    <string name="ad_pc">Personal computers</string>
+    <string name="ad_smartphone">Smartphones</string>
+    <string name="ad_dm">Household equipment</string>
+
+    <string name="ad_cat2">Account</string>
+    <string name="ac_sign_up">Registration</string>
+    <string name="ac_sign_in">Sign In</string>
+    <string name="ac_sign_out">Sign Out</string>
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>
