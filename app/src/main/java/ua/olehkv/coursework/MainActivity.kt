@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         init()
     }
 
-    private fun init() = with(binding){
+    private fun init() = with(binding) {
         val toggle = ActionBarDrawerToggle(this@MainActivity, drawerLayout, included.toolbar, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
