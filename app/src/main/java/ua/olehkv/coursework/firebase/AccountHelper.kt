@@ -1,17 +1,19 @@
-package ua.olehkv.coursework
+package ua.olehkv.coursework.firebase
 
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import ua.olehkv.coursework.MainActivity
+import ua.olehkv.coursework.R
 
 class AccountHelper(private val activity: MainActivity) {
     private lateinit var signInClient: GoogleSignInClient
@@ -30,7 +32,8 @@ class AccountHelper(private val activity: MainActivity) {
                     val ex = task.exception as FirebaseAuthUserCollisionException
                     //Log.d("AAA", "Exception: ${ex.errorCode}")
                     if (ex.errorCode == FirebaseAuthConstants.ERROR_EMAIL_ALREADY_IN_USE){
-                        Toast.makeText(activity, FirebaseAuthConstants.ERROR_EMAIL_ALREADY_IN_USE, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity,
+                            FirebaseAuthConstants.ERROR_EMAIL_ALREADY_IN_USE, Toast.LENGTH_SHORT).show()
                         linkEmailToGoogleAccount(email, password)
                     }
                 }
@@ -70,6 +73,11 @@ class AccountHelper(private val activity: MainActivity) {
                     else if (ex.errorCode == FirebaseAuthConstants.ERROR_EMAIL_ALREADY_IN_USE){
                         Toast.makeText(activity, FirebaseAuthConstants.ERROR_EMAIL_ALREADY_IN_USE, Toast.LENGTH_SHORT).show()
                     }
+                    else Toast.makeText(activity, ex.errorCode, Toast.LENGTH_SHORT).show()
+                }
+                if (task.exception is FirebaseAuthInvalidUserException){
+                    val ex = task.exception as FirebaseAuthInvalidUserException
+                    Toast.makeText(activity, ex.errorCode, Toast.LENGTH_SHORT).show()
                 }
 //                Toast.makeText(activity, "Sign in error", Toast.LENGTH_SHORT).show()
             }

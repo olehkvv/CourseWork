@@ -5,25 +5,23 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
-import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.auth
 import ua.olehkv.coursework.databinding.ActivityMainBinding
 import ua.olehkv.coursework.dialogs.DialogConstants
-import ua.olehkv.coursework.dialogs.DialogHelper
+import ua.olehkv.coursework.dialogs.DialogAuthHelper
+import ua.olehkv.coursework.firebase.AccountHelper
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val dialogHelper = DialogHelper(this)
+    private val dialogHelper = DialogAuthHelper(this)
     val mAuth = FirebaseAuth.getInstance()
     private lateinit var tvAccountEmail: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +82,18 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
 
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.id_new_ad -> {
+                val i = Intent(this, EditAdvertisementActivity::class.java)
+                startActivity(i)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == AccountHelper.SIGN_IN_REQUEST_CODE){

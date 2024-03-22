@@ -4,20 +4,15 @@ import android.app.AlertDialog
 import android.content.Context
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import ua.olehkv.coursework.AccountHelper
+import ua.olehkv.coursework.firebase.AccountHelper
 import ua.olehkv.coursework.MainActivity
 import ua.olehkv.coursework.R
 import ua.olehkv.coursework.databinding.SignDialogBinding
 
-class DialogHelper(private val activity: MainActivity) {
+class DialogAuthHelper(private val activity: MainActivity) {
     val accHelper = AccountHelper(activity)
     fun showSignDialog(index: Int){
         val builder = AlertDialog.Builder(activity)

@@ -20,5 +20,8 @@
     <string name="password_hint">Password</string>
 
     <string name="default_web_client_id">401000349299-a63sttv0b2gti3qlqqvcurp22gk06v0g.apps.googleusercontent.com</string>
+    <string name="choose_country">*Choose country</string>
+    <string name="choose_city">*Choose city</string>
+    <string name="no_result">No result</string>
 
 </resources>

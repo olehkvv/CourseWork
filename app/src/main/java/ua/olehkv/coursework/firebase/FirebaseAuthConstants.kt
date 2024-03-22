@@ -1,4 +1,4 @@
-package ua.olehkv.coursework
+package ua.olehkv.coursework.firebase
 
 object FirebaseAuthConstants {
     const val ERROR_EMAIL_ALREADY_IN_USE = "ERROR_EMAIL_ALREADY_IN_USE"
