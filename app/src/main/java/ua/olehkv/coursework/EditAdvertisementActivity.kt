@@ -1,20 +1,28 @@
 package ua.olehkv.coursework
 
+import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import com.fxn.pix.Pix
+import com.fxn.utility.PermUtil
 import ua.olehkv.coursework.databinding.ActivityEditAdvertisementBinding
 import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
 import ua.olehkv.coursework.utils.CityHelper
+import ua.olehkv.coursework.utils.ImagePicker
 
 class EditAdvertisementActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditAdvertisementBinding
     private val dialog = DialogSpinnerHelper()
+    private var isImagesPermissionGranted = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditAdvertisementBinding.inflate(layoutInflater)
         setContentView(binding.root)
         init()
+
     }
 
     private fun init() = with(binding){
@@ -44,6 +52,43 @@ class EditAdvertisementActivity : AppCompatActivity() {
             else Toast.makeText(this@EditAdvertisementActivity, "No country selected", Toast.LENGTH_SHORT).show()
         }
 
+        ibOpenPicker.setOnClickListener {
+            ImagePicker.getImages(this@EditAdvertisementActivity)
+        }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
+            if (data != null) {
+                val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
+                Log.d("AAA", "Image: ${returnValue?.get(0)}")
+                Log.d("AAA", "Image: ${returnValue?.get(1)}")
+                Log.d("AAA", "Image: ${returnValue?.get(2)}")
+            }
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    isImagesPermissionGranted = true
+                    ImagePicker.getImages(this)
+                }
+                else {
+                    isImagesPermissionGranted = false
+                    Toast.makeText(this, "Approve permissions to open image picker", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
 //    private fun init() = with(binding) {

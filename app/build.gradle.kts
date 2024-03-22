@@ -54,6 +54,8 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
 
+    implementation("com.fxn769:pix:1.5.6")
+
 
     // Tests
     testImplementation("junit:junit:4.13.2")
