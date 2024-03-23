@@ -7,10 +7,10 @@ import com.fxn.pix.Pix
 
 object ImagePicker {
     const val REQUEST_CODE_GET_IMAGES = 122
-    fun getImages(context: AppCompatActivity) {
+    fun getImages(context: AppCompatActivity, imageCount: Int) {
         val options = Options.init()
             .setRequestCode(REQUEST_CODE_GET_IMAGES)
-            .setCount(3)
+            .setCount(imageCount)
             .setFrontfacing(false)
             .setMode(Options.Mode.Picture)
             .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT)

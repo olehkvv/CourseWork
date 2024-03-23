@@ -23,5 +23,7 @@
     <string name="choose_country">*Choose country</string>
     <string name="choose_city">*Choose city</string>
     <string name="no_result">No result</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

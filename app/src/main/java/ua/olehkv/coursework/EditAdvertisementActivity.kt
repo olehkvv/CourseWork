@@ -5,15 +5,18 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
+import com.google.android.play.core.integrity.z
 import ua.olehkv.coursework.databinding.ActivityEditAdvertisementBinding
 import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
+import ua.olehkv.coursework.fragments.ImageListFragment
 import ua.olehkv.coursework.utils.CityHelper
 import ua.olehkv.coursework.utils.ImagePicker
 
-class EditAdvertisementActivity : AppCompatActivity() {
+class EditAdvertisementActivity: AppCompatActivity() {
     private lateinit var binding: ActivityEditAdvertisementBinding
     private val dialog = DialogSpinnerHelper()
     private var isImagesPermissionGranted = false
@@ -53,7 +56,16 @@ class EditAdvertisementActivity : AppCompatActivity() {
         }
 
         ibOpenPicker.setOnClickListener {
-            ImagePicker.getImages(this@EditAdvertisementActivity)
+
+            ImagePicker.getImages(this@EditAdvertisementActivity, 3)
+
+//            binding.scrollViewMain.visibility = View.GONE
+//            supportFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.placeHolder, ImageListFragment(){
+//                    binding.scrollViewMain.visibility = View.VISIBLE
+//                })
+//                .commit()
         }
 
     }
@@ -62,10 +74,16 @@ class EditAdvertisementActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
             if (data != null) {
-                val returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
-                Log.d("AAA", "Image: ${returnValue?.get(0)}")
-                Log.d("AAA", "Image: ${returnValue?.get(1)}")
-                Log.d("AAA", "Image: ${returnValue?.get(2)}")
+                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
+                if (returnValues?.size!! > 1) {
+                    binding.scrollViewMain.visibility = View.GONE
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.placeHolder, ImageListFragment(returnValues) {
+                            binding.scrollViewMain.visibility = View.VISIBLE
+                        })
+                        .commit()
+                }
             }
         }
     }
@@ -81,7 +99,7 @@ class EditAdvertisementActivity : AppCompatActivity() {
             PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     isImagesPermissionGranted = true
-                    ImagePicker.getImages(this)
+                    ImagePicker.getImages(this, 3)
                 }
                 else {
                     isImagesPermissionGranted = false
@@ -90,6 +108,8 @@ class EditAdvertisementActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
 //    private fun init() = with(binding) {
 //        val adapter = ArrayAdapter(
