@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
 import com.google.android.play.core.integrity.z
+import ua.olehkv.coursework.adapters.ImageAdapter
 import ua.olehkv.coursework.databinding.ActivityEditAdvertisementBinding
 import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
 import ua.olehkv.coursework.fragments.ImageListFragment
@@ -20,6 +21,9 @@ class EditAdvertisementActivity: AppCompatActivity() {
     private lateinit var binding: ActivityEditAdvertisementBinding
     private val dialog = DialogSpinnerHelper()
     private var isImagesPermissionGranted = false
+    private lateinit var imageAdapter: ImageAdapter
+    private var chooseImageFrag: ImageListFragment? = null
+    var editImagePos = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditAdvertisementBinding.inflate(layoutInflater)
@@ -29,7 +33,6 @@ class EditAdvertisementActivity: AppCompatActivity() {
     }
 
     private fun init() = with(binding){
-
         tvChooseCountry.setOnClickListener{
             val listCountry = CityHelper.getAllCountries(this@EditAdvertisementActivity)
             dialog.showSpinnerDialog(this@EditAdvertisementActivity, listCountry) {
@@ -49,16 +52,16 @@ class EditAdvertisementActivity: AppCompatActivity() {
                     tvChooseCity.text = if(it == getString(R.string.no_result)) getString(R.string.choose_city) else it
                     dialog.dismiss()
                 }
-
-
             }
             else Toast.makeText(this@EditAdvertisementActivity, "No country selected", Toast.LENGTH_SHORT).show()
         }
 
         ibOpenPicker.setOnClickListener {
-
-            ImagePicker.getImages(this@EditAdvertisementActivity, 3)
-
+            if(imageAdapter.imageList.size == 0)
+                ImagePicker.getImages(this@EditAdvertisementActivity, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)
+            else {
+                openChooseImageFragment(imageAdapter.imageList)
+            }
 //            binding.scrollViewMain.visibility = View.GONE
 //            supportFragmentManager
 //                .beginTransaction()
@@ -67,26 +70,53 @@ class EditAdvertisementActivity: AppCompatActivity() {
 //                })
 //                .commit()
         }
+        imageAdapter = ImageAdapter()
+        viewPagerImages.adapter = imageAdapter
 
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
             if (data != null) {
                 val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
-                if (returnValues?.size!! > 1) {
-                    binding.scrollViewMain.visibility = View.GONE
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.placeHolder, ImageListFragment(returnValues) {
-                            binding.scrollViewMain.visibility = View.VISIBLE
-                        })
-                        .commit()
+                if (returnValues?.size!! > 1 && chooseImageFrag == null) {
+                    openChooseImageFragment(returnValues)
                 }
+                else if (returnValues.size == 1 && chooseImageFrag == null){
+                    imageAdapter.updateList(returnValues)
+                }
+                else if(chooseImageFrag != null){
+                    chooseImageFrag!!.updateAdapter(returnValues)
+                }
+            }
+
+        }
+        else if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_SINGLE_IMAGE){
+            if (data != null) {
+                val uris = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
+                chooseImageFrag?.setSingleImage(uris!![0]!!, editImagePos)
             }
         }
     }
+
+    private fun openChooseImageFragment(newList: ArrayList<String>){
+        chooseImageFrag = ImageListFragment(newList) { list ->
+            binding.scrollViewMain.visibility = View.VISIBLE
+            binding.viewPagerImages.setCurrentItem(0, false)
+            imageAdapter.updateList(list)
+            chooseImageFrag = null
+        }
+        binding.scrollViewMain.visibility = View.GONE
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.placeHolder, chooseImageFrag!!)
+            .commit()
+    }
+
+
 
 
     override fun onRequestPermissionsResult(
@@ -99,7 +129,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
             PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     isImagesPermissionGranted = true
-                    ImagePicker.getImages(this, 3)
+                    ImagePicker.getImages(this, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)
                 }
                 else {
                     isImagesPermissionGranted = false
