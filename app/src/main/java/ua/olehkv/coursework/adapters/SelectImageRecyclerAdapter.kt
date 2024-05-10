@@ -1,7 +1,7 @@
 package ua.olehkv.coursework.adapters
 
 import android.content.Context
-import android.net.Uri
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,17 +9,18 @@ import androidx.recyclerview.widget.RecyclerView
 import ua.olehkv.coursework.EditAdvertisementActivity
 import ua.olehkv.coursework.R
 import ua.olehkv.coursework.databinding.SelectImageListItemBinding
+import ua.olehkv.coursework.utils.ImageManager
 import ua.olehkv.coursework.utils.ImagePicker
 import ua.olehkv.coursework.utils.ItemTouchMoveCallback
 
 
-class SelectImageRecyclerAdapter: RecyclerView.Adapter<SelectImageRecyclerAdapter.ImageHolder>(), ItemTouchMoveCallback.ItemTouchAdapter {
-    val mainList = ArrayList<String>()
-    inner class ImageHolder(view: View, private val context: Context): RecyclerView.ViewHolder(view) {
-        private val binding = SelectImageListItemBinding.bind(view)
-        fun bind(selectImageItem: String) = with(binding){
+class SelectImageRecyclerAdapter(private val listener: Listener): RecyclerView.Adapter<SelectImageRecyclerAdapter.ImageHolder>(), ItemTouchMoveCallback.ItemTouchAdapter {
+    val mainList = ArrayList<Bitmap>()
+    inner class ImageHolder(private val binding: SelectImageListItemBinding, private val context: Context): RecyclerView.ViewHolder(binding.root) {
+        fun bind(bitmap: Bitmap) = with(binding){
             tvTitle.text = context.resources.getStringArray(R.array.title_array)[adapterPosition]
-            imContent.setImageURI(Uri.parse(selectImageItem))
+            imContent.setImageBitmap(bitmap)
+            ImageManager.chooseScaleType(imContent, bitmap)
             ibEdit.setOnClickListener {
                 ImagePicker.getImages(context as EditAdvertisementActivity, 1, ImagePicker.REQUEST_CODE_GET_SINGLE_IMAGE)
                 context.editImagePos = adapterPosition
@@ -30,6 +31,7 @@ class SelectImageRecyclerAdapter: RecyclerView.Adapter<SelectImageRecyclerAdapte
                 for(i in 0 until mainList.size){  // for saving delete animation in recycler with deleting
                     notifyItemChanged(i)
                 }
+                listener.onItemDelete()
             }
 
         }
@@ -37,7 +39,8 @@ class SelectImageRecyclerAdapter: RecyclerView.Adapter<SelectImageRecyclerAdapte
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.select_image_list_item, parent, false)
-        return ImageHolder(view, parent.context)
+        val binding = SelectImageListItemBinding.bind(view)
+        return ImageHolder(binding, parent.context)
     }
 
     override fun getItemCount(): Int {
@@ -48,7 +51,7 @@ class SelectImageRecyclerAdapter: RecyclerView.Adapter<SelectImageRecyclerAdapte
         holder.bind(mainList[position])
     }
 
-    fun updateAdapter(newList: ArrayList<String>, shouldClear: Boolean){
+    fun updateAdapter(newList: ArrayList<Bitmap>, shouldClear: Boolean){
         if(shouldClear) mainList.clear()
         mainList.addAll(newList)
         notifyDataSetChanged()
@@ -63,6 +66,10 @@ class SelectImageRecyclerAdapter: RecyclerView.Adapter<SelectImageRecyclerAdapte
 //        mainList[startPosition].title = titleStart
 
         notifyItemMoved(startPosition, targetPosition)
+    }
+
+    interface Listener{
+        fun onItemDelete()
     }
 
     override fun onClear() {

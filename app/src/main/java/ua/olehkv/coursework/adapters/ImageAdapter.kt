@@ -1,5 +1,6 @@
 package ua.olehkv.coursework.adapters
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +10,7 @@ import ua.olehkv.coursework.R
 import ua.olehkv.coursework.databinding.ImageAdapterItemBinding
 
 class ImageAdapter: RecyclerView.Adapter<ImageAdapter.ImageHolder>() {
-    val imageList = ArrayList<String>()
+    val imageList = ArrayList<Bitmap>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.image_adapter_item, parent, false)
         return ImageHolder(view)
@@ -25,12 +26,12 @@ class ImageAdapter: RecyclerView.Adapter<ImageAdapter.ImageHolder>() {
 
     class ImageHolder(view: View): RecyclerView.ViewHolder(view) {
         private val binding = ImageAdapterItemBinding.bind(view)
-        fun bind(uri: String) = with(binding){
-            imItem.setImageURI(Uri.parse(uri))
+        fun bind(bitmap: Bitmap) = with(binding){
+            imItem.setImageBitmap(bitmap)
         }
     }
 
-    fun updateList(newList: ArrayList<String>){
+    fun updateList(newList: ArrayList<Bitmap>){
         imageList.clear()
         imageList.addAll(newList)
         notifyDataSetChanged()

@@ -14,7 +14,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -54,7 +54,10 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
 
+    // Image Picker
     implementation("com.fxn769:pix:1.5.6")
+    // Picasso
+    implementation("com.squareup.picasso:picasso:2.8")
 
 
     // Tests

@@ -10,19 +10,24 @@ import android.widget.Toast
 import com.fxn.pix.Pix
 import com.fxn.utility.PermUtil
 import com.google.android.play.core.integrity.z
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ua.olehkv.coursework.adapters.ImageAdapter
 import ua.olehkv.coursework.databinding.ActivityEditAdvertisementBinding
 import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
 import ua.olehkv.coursework.fragments.ImageListFragment
 import ua.olehkv.coursework.utils.CityHelper
+import ua.olehkv.coursework.utils.ImageManager.ImageDimension
+import ua.olehkv.coursework.utils.ImageManager
 import ua.olehkv.coursework.utils.ImagePicker
 
 class EditAdvertisementActivity: AppCompatActivity() {
-    private lateinit var binding: ActivityEditAdvertisementBinding
-    private val dialog = DialogSpinnerHelper()
-    private var isImagesPermissionGranted = false
-    private lateinit var imageAdapter: ImageAdapter
-    private var chooseImageFrag: ImageListFragment? = null
+    lateinit var binding: ActivityEditAdvertisementBinding
+    val dialog = DialogSpinnerHelper()
+    var isImagesPermissionGranted = false
+    lateinit var imageAdapter: ImageAdapter
+    var chooseImageFrag: ImageListFragment? = null
     var editImagePos = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,15 +65,10 @@ class EditAdvertisementActivity: AppCompatActivity() {
             if(imageAdapter.imageList.size == 0)
                 ImagePicker.getImages(this@EditAdvertisementActivity, 3, ImagePicker.REQUEST_CODE_GET_IMAGES)
             else {
-                openChooseImageFragment(imageAdapter.imageList)
+                openChooseImageFragment(null)
+                chooseImageFrag?.updateAdapterFromEdit(imageAdapter.imageList)
             }
-//            binding.scrollViewMain.visibility = View.GONE
-//            supportFragmentManager
-//                .beginTransaction()
-//                .replace(R.id.placeHolder, ImageListFragment(){
-//                    binding.scrollViewMain.visibility = View.VISIBLE
-//                })
-//                .commit()
+
         }
         imageAdapter = ImageAdapter()
         viewPagerImages.adapter = imageAdapter
@@ -79,30 +79,10 @@ class EditAdvertisementActivity: AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_IMAGES) {
-            if (data != null) {
-                val returnValues = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
-                if (returnValues?.size!! > 1 && chooseImageFrag == null) {
-                    openChooseImageFragment(returnValues)
-                }
-                else if (returnValues.size == 1 && chooseImageFrag == null){
-                    imageAdapter.updateList(returnValues)
-                }
-                else if(chooseImageFrag != null){
-                    chooseImageFrag!!.updateAdapter(returnValues)
-                }
-            }
-
-        }
-        else if(resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_GET_SINGLE_IMAGE){
-            if (data != null) {
-                val uris = data.getStringArrayListExtra(Pix.IMAGE_RESULTS)
-                chooseImageFrag?.setSingleImage(uris!![0]!!, editImagePos)
-            }
-        }
+        ImagePicker.showSelectedImages(resultCode,requestCode, data, this)
     }
 
-    private fun openChooseImageFragment(newList: ArrayList<String>){
+    fun openChooseImageFragment(newList: ArrayList<String>?){
         chooseImageFrag = ImageListFragment(newList) { list ->
             binding.scrollViewMain.visibility = View.VISIBLE
             binding.viewPagerImages.setCurrentItem(0, false)
