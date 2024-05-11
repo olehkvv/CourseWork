@@ -3,7 +3,6 @@ package ua.olehkv.coursework.fragments
 import android.app.Activity
 import android.graphics.Bitmap
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -26,13 +25,25 @@ import ua.olehkv.coursework.utils.ImageManager
 import ua.olehkv.coursework.utils.ImagePicker
 import ua.olehkv.coursework.utils.ItemTouchMoveCallback
 
-class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) : BaseSelectImageFragment(), SelectImageRecyclerAdapter.Listener {
-
+class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) : BaseAdsFragment(),
+    InterstitialAdListener,
+    SelectImageRecyclerAdapter.Listener {
+    lateinit var binding: FragmentImageListBinding
     private var adapter = SelectImageRecyclerAdapter(this)
     private val dragCallback = ItemTouchMoveCallback(adapter)
     val touchHelper = ItemTouchHelper(dragCallback)
     private var job: Job? = null
     var addImageItem: MenuItem? = null
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentImageListBinding.inflate(layoutInflater)
+        adView = binding.adView
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,10 +68,7 @@ class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentC
         val deleteImageItem = toolbar.menu.findItem(R.id.id_delete_image)
 
         toolbar.setNavigationOnClickListener {
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.remove(this@ImageListFragment)
-                ?.commit()
+            showInterstitialAd()
         }
         addImageItem?.setOnMenuItemClickListener {
             if (adapter.mainList.size == ImagePicker.MAX_IMAGE_COUNT){
@@ -114,6 +122,13 @@ class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentC
 
     override fun onItemDelete() {
         addImageItem?.isVisible = true
+    }
+
+    override fun onClose() {
+        activity?.supportFragmentManager
+            ?.beginTransaction()
+            ?.remove(this@ImageListFragment)
+            ?.commit()
     }
 
 
