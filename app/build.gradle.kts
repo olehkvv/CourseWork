@@ -50,7 +50,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.android.gms:play-services-auth:21.1.1")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
 
@@ -58,6 +58,8 @@ dependencies {
     implementation("com.fxn769:pix:1.5.6")
     // Picasso
     implementation("com.squareup.picasso:picasso:2.8")
+    // AdMob
+    implementation("com.google.android.gms:play-services-ads:23.1.0")
 
 
     // Tests

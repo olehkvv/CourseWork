@@ -26,17 +26,13 @@ import ua.olehkv.coursework.utils.ImageManager
 import ua.olehkv.coursework.utils.ImagePicker
 import ua.olehkv.coursework.utils.ItemTouchMoveCallback
 
-class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) : Fragment(), SelectImageRecyclerAdapter.Listener {
-    private lateinit var binding: FragmentImageListBinding
+class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) : BaseSelectImageFragment(), SelectImageRecyclerAdapter.Listener {
+
     private var adapter = SelectImageRecyclerAdapter(this)
     private val dragCallback = ItemTouchMoveCallback(adapter)
     val touchHelper = ItemTouchHelper(dragCallback)
     private var job: Job? = null
     var addImageItem: MenuItem? = null
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentImageListBinding.inflate(layoutInflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
