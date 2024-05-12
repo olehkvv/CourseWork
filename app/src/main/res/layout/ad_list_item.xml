@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="5dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginHorizontal="5dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:textColor="@color/black"
+                 />
+
+            <ImageView
+                android:id="@+id/mainImage"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginHorizontal="5dp"
+                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginHorizontal="5dp"
+                android:gravity="center_horizontal"
+                android:text="Description" />
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginHorizontal="5dp"
+                android:gravity="center_horizontal"
+                android:text="Price" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/imViewCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_eye"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvViewCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="22324234322342"
+                    android:maxLength="3"
+                    android:scrollHorizontally="true"
+                    android:ellipsize="end"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/imViewCounter"
+                    app:layout_constraintStart_toEndOf="@+id/imViewCounter"
+                    app:layout_constraintTop_toTopOf="@+id/imViewCounter" />
+
+                <ImageButton
+                    android:id="@+id/imFavourite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_fav_normal"
+                    app:layout_constraintStart_toEndOf="@+id/tvViewCounter"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvFavCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    app:layout_constraintBottom_toBottomOf="@+id/imFavourite"
+                    app:layout_constraintStart_toEndOf="@+id/imFavourite"
+                    app:layout_constraintTop_toTopOf="@+id/imFavourite" />
+
+
+
+                <ImageButton
+                    android:id="@+id/ibEditAd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_edit_image"
+                    android:background="@android:color/transparent"
+                    android:layout_marginEnd="16dp"
+                    app:tint="#4A558A"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ibDeleteAd"
+
+                    app:layout_constraintTop_toTopOf="parent"
+                     />
+
+                <ImageButton
+                    android:id="@+id/ibDeleteAd"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+
+                    android:src="@drawable/ic_delete_ad"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+
+</androidx.cardview.widget.CardView>

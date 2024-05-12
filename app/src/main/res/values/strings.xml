@@ -25,15 +25,17 @@
     <string name="choose_city">*Choose city</string>
     <string name="country">Country</string>
     <string name="city">City</string>
-    <string name="index">Index</string>
     <string name="tel">Telephone</string>
     <string name="tel_number">tel number</string>
+    <string name="index">Index</string>
+    <string name="with_send">With send</string>
     <string name="category">Category</string>
     <string name="select_category">*Select category</string>
     <string name="price">Price</string>
     <string name="input_price">Input price</string>
     <string name="description">Description</string>
     <string name="input_description">Input description</string>
+    <string name="publish">Publish</string>
 
     <string name="no_result">No result</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -42,5 +44,20 @@
     <!-- for AdMob -->
     <string name="ad_banner_id">ca-app-pub-3940256099942544/9214589741</string>
     <string name="ad_interstitial_id">ca-app-pub-3940256099942544/1033173712</string>
+
+
+
+
+
+
+
+
+
+    <string-array name="category">
+        <item>Cars</item>
+        <item>Personal computers</item>
+        <item>Smartphones</item>
+        <item>Household equipment</item>
+    </string-array>
 
 </resources>

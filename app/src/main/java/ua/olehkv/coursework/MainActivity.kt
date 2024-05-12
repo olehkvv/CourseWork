@@ -14,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import ua.olehkv.coursework.database.DbManager
 import ua.olehkv.coursework.databinding.ActivityMainBinding
 import ua.olehkv.coursework.dialogs.DialogConstants
 import ua.olehkv.coursework.dialogs.DialogAuthHelper
@@ -24,11 +25,13 @@ class MainActivity : AppCompatActivity() {
     private val dialogHelper = DialogAuthHelper(this)
     val mAuth = FirebaseAuth.getInstance()
     private lateinit var tvAccountEmail: TextView
+    val dbManager = DbManager()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         init()
+        dbManager.readDataFromDb()
     }
 
     override fun onStart() {

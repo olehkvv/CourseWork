@@ -14,9 +14,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.olehkv.coursework.adapters.ImageAdapter
+import ua.olehkv.coursework.database.DbManager
 import ua.olehkv.coursework.databinding.ActivityEditAdvertisementBinding
 import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
 import ua.olehkv.coursework.fragments.ImageListFragment
+import ua.olehkv.coursework.models.Advertisement
 import ua.olehkv.coursework.utils.CityHelper
 import ua.olehkv.coursework.utils.ImageManager.ImageDimension
 import ua.olehkv.coursework.utils.ImageManager
@@ -27,6 +29,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
     val dialog = DialogSpinnerHelper()
     var isImagesPermissionGranted = false
     lateinit var imageAdapter: ImageAdapter
+    private val dbManager = DbManager()
     var chooseImageFrag: ImageListFragment? = null
     var editImagePos = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +76,34 @@ class EditAdvertisementActivity: AppCompatActivity() {
         imageAdapter = ImageAdapter()
         viewPagerImages.adapter = imageAdapter
 
+        tvSelectCategory.setOnClickListener {
+            val categoryList = resources.getStringArray(R.array.category).toMutableList() as ArrayList
+            dialog.showSpinnerDialog(this@EditAdvertisementActivity, categoryList){
+                tvSelectCategory.text = if(it == getString(R.string.no_result)) getString(R.string.select_category) else it
+                dialog.dismiss()
+            }
+        }
+
+        btPublish.setOnClickListener {
+
+            dbManager.publishAd(fillAd())
+        }
+
+    }
+
+    private fun fillAd(): Advertisement = with(binding){
+         Advertisement(
+            country = tvChooseCountry.text.toString(),
+            city = tvChooseCity.text.toString(),
+            tel = edTelNumber.text.toString(),
+            index = edIndex.text.toString(),
+            withSend = checkBoxWithSend.isChecked.toString(),
+            category = tvSelectCategory.text.toString(),
+            price = edPrice.text.toString(),
+            description = edDescription.text.toString(),
+            key = dbManager.db.push().key // generates unique key
+
+        )
     }
 
 
