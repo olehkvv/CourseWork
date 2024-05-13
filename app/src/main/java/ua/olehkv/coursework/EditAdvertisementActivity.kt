@@ -8,6 +8,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import com.fxn.utility.PermUtil
+import com.google.android.play.integrity.internal.ad
+import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
+import ua.olehkv.coursework.MainActivity.Companion.EDIT_STATE
 import ua.olehkv.coursework.adapters.ImageAdapter
 import ua.olehkv.coursework.model.DbManager
 import ua.olehkv.coursework.databinding.ActivityEditAdvertisementBinding
@@ -27,12 +30,14 @@ class EditAdvertisementActivity: AppCompatActivity() {
     var editImagePos = 0
     var launcherMultiSelectImages: ActivityResultLauncher<Intent>? = null
     var launcherSingleSelectImages: ActivityResultLauncher<Intent>? = null
+    private var isEditState = false
+    private var ad: Advertisement? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditAdvertisementBinding.inflate(layoutInflater)
         setContentView(binding.root)
         init()
-
+        checkEditState()
     }
 
     private fun init() = with(binding){
@@ -85,7 +90,16 @@ class EditAdvertisementActivity: AppCompatActivity() {
         }
 
         btPublish.setOnClickListener {
-            dbManager.publishAd(fillAd())
+            val tempAd = fillAd()
+            if(isEditState)
+                //  add a callback to avoid the case when we switch to MainActivity,
+                // and the data has not yet had time to load on FireBase
+                dbManager.publishAd(tempAd .copy(key = ad?.key)) // don't overwrite key for edited ads otherwise it creates a new ad
+                { finish() } // when ad loaded on Firebase
+            else {
+                dbManager.publishAd(tempAd)
+                { finish() }
+            }
         }
 
     }
@@ -104,6 +118,29 @@ class EditAdvertisementActivity: AppCompatActivity() {
             key = dbManager.db.push().key, // generates unique key
             uid = dbManager.auth.uid
         )
+    }
+
+    private fun checkEditState(){
+        isEditState = isEditState()
+        if (isEditState) {
+            ad = intent.getSerializableExtra(ADS_DATA) as Advertisement
+            fillViews(ad!!)
+        }
+    }
+
+    private fun isEditState(): Boolean {
+        return intent.getBooleanExtra(EDIT_STATE, false)
+    }
+    private fun fillViews(ad: Advertisement) = with(binding){
+        tvChooseCountry.text = ad.country
+        tvChooseCity.text = ad.city
+        edTelNumber.setText(ad.tel)
+        edIndex.setText(ad.index)
+        checkBoxWithSend.isChecked = ad.withSend.toBoolean()
+        tvSelectCategory.text = ad.category
+        edTitle.setText(ad.title)
+        edPrice.setText(ad.price)
+        edDescription.setText(ad.description)
     }
 
 

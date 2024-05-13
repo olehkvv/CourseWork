@@ -1,14 +1,19 @@
 package ua.olehkv.coursework.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import ua.olehkv.coursework.EditAdvertisementActivity
+import ua.olehkv.coursework.MainActivity
+import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
+import ua.olehkv.coursework.MainActivity.Companion.EDIT_STATE
 import ua.olehkv.coursework.databinding.AdListItemBinding
 import ua.olehkv.coursework.model.Advertisement
 
-class AdvertisementsAdapter(private val auth: FirebaseAuth): RecyclerView.Adapter<AdvertisementsAdapter.AdvertisementHolder>() {
+class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Adapter<AdvertisementsAdapter.AdvertisementHolder>() {
 
     private val adList = ArrayList<Advertisement>()
     inner class AdvertisementHolder(private val binding: AdListItemBinding): RecyclerView.ViewHolder(binding.root) {
@@ -17,10 +22,17 @@ class AdvertisementsAdapter(private val auth: FirebaseAuth): RecyclerView.Adapte
             tvDescription.text = ad.description
             tvPrice.text = ad.price
             showEditPanel(isOwner(ad))
+            ibEditAd.setOnClickListener {
+                val i = Intent(mainAct, EditAdvertisementActivity::class.java).apply {
+                    putExtra(EDIT_STATE, true)
+                    putExtra(ADS_DATA, ad)
+                }
+                mainAct.startActivity(i)
+            }
         }
 
         private fun isOwner(ad: Advertisement): Boolean{
-            return ad.uid == auth.uid
+            return ad.uid == mainAct.mAuth.uid
         }
 
         private fun showEditPanel(isOwner: Boolean){
@@ -50,5 +62,9 @@ class AdvertisementsAdapter(private val auth: FirebaseAuth): RecyclerView.Adapte
         adList.clear()
         adList.addAll(newList)
         notifyDataSetChanged()
+    }
+
+    interface Listener{
+        fun onEditClick()
     }
 }

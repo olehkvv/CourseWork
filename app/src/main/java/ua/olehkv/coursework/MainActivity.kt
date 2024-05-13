@@ -24,12 +24,12 @@ import ua.olehkv.coursework.dialogs.DialogAuthHelper
 import ua.olehkv.coursework.firebase.AccountHelper
 import ua.olehkv.coursework.viewmodel.FirebaseViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
     private lateinit var binding: ActivityMainBinding
     private val dialogHelper = DialogAuthHelper(this)
     val mAuth = Firebase.auth
     private lateinit var tvAccountEmail: TextView
-    private val adapter = AdvertisementsAdapter(mAuth)
+    private val adapter = AdvertisementsAdapter(this)
     private val firebaseViewModel: FirebaseViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -167,6 +167,12 @@ class MainActivity : AppCompatActivity() {
 
     fun uiUpdate(user: FirebaseUser?) {
         tvAccountEmail.text = if (user == null) "Sign Up or Sign In" else user.email
+    }
+
+
+    companion object{
+        const val EDIT_STATE = "edit_state"
+        const val ADS_DATA = "ads_data"
     }
 
 //    override fun readData(newList: ArrayList<Advertisement>) {

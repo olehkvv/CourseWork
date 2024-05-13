@@ -1,5 +1,7 @@
 package ua.olehkv.coursework.model
 
+import java.io.Serializable
+
 data class Advertisement(
     val country: String? = null,
     val city: String? = null,
@@ -12,4 +14,4 @@ data class Advertisement(
     val description: String? = null,
     val key: String? = null,
     val uid: String? = null
-)
+): Serializable

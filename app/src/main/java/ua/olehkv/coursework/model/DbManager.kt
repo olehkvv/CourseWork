@@ -9,14 +9,18 @@ import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import ua.olehkv.coursework.EditAdvertisementActivity
 
 class DbManager {
     val db = Firebase.database.getReference("main")
     val auth = Firebase.auth
 
-    fun publishAd(ad: Advertisement){
+    fun publishAd(ad: Advertisement, finishWorkListener: FinishWorkListener){
         if(auth.uid != null){
             db.child(ad.key ?: "empty").child(auth.uid!!).child("ad").setValue(ad)
+                .addOnCompleteListener { 
+                    finishWorkListener.onLoadingFinish()
+                }
         }
     }
 
@@ -52,4 +56,9 @@ class DbManager {
     interface ReadDataCallback {
         fun readData(list: ArrayList<Advertisement>)
     }
+
+    fun interface FinishWorkListener{
+        fun onLoadingFinish()
+    }
+
 }
