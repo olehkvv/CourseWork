@@ -1,20 +1,37 @@
 package ua.olehkv.coursework.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import ua.olehkv.coursework.databinding.AdListItemBinding
-import ua.olehkv.coursework.models.Advertisement
+import ua.olehkv.coursework.model.Advertisement
 
-class AdvertisementsAdapter: RecyclerView.Adapter<AdvertisementsAdapter.AdvertisementHolder>() {
+class AdvertisementsAdapter(private val auth: FirebaseAuth): RecyclerView.Adapter<AdvertisementsAdapter.AdvertisementHolder>() {
 
     private val adList = ArrayList<Advertisement>()
-    class AdvertisementHolder(private val binding: AdListItemBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class AdvertisementHolder(private val binding: AdListItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(ad: Advertisement) = with(binding){
             tvTitle.text = ad.title
             tvDescription.text = ad.description
             tvPrice.text = ad.price
+            showEditPanel(isOwner(ad))
+        }
 
+        private fun isOwner(ad: Advertisement): Boolean{
+            return ad.uid == auth.uid
+        }
+
+        private fun showEditPanel(isOwner: Boolean){
+            if (isOwner){
+                binding.ibEditAd.visibility = View.VISIBLE
+                binding.ibDeleteAd.visibility = View.VISIBLE
+            }
+            else{
+                binding.ibEditAd.visibility = View.GONE
+                binding.ibDeleteAd.visibility = View.GONE
+            }
         }
     }
 

@@ -9,11 +9,11 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import com.fxn.utility.PermUtil
 import ua.olehkv.coursework.adapters.ImageAdapter
-import ua.olehkv.coursework.database.DbManager
+import ua.olehkv.coursework.model.DbManager
 import ua.olehkv.coursework.databinding.ActivityEditAdvertisementBinding
 import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
 import ua.olehkv.coursework.fragments.ImageListFragment
-import ua.olehkv.coursework.models.Advertisement
+import ua.olehkv.coursework.model.Advertisement
 import ua.olehkv.coursework.utils.CityHelper
 import ua.olehkv.coursework.utils.ImagePicker
 
@@ -101,8 +101,8 @@ class EditAdvertisementActivity: AppCompatActivity() {
             title = edTitle.text.toString(),
             price = edPrice.text.toString(),
             description = edDescription.text.toString(),
-            key = dbManager.db.push().key // generates unique key
-
+            key = dbManager.db.push().key, // generates unique key
+            uid = dbManager.auth.uid
         )
     }
 

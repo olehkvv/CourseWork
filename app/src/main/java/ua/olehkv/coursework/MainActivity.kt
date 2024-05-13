@@ -8,41 +8,48 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import ua.olehkv.coursework.adapters.AdvertisementsAdapter
-import ua.olehkv.coursework.database.DbManager
-import ua.olehkv.coursework.database.ReadDataCallback
 import ua.olehkv.coursework.databinding.ActivityMainBinding
 import ua.olehkv.coursework.dialogs.DialogConstants
 import ua.olehkv.coursework.dialogs.DialogAuthHelper
 import ua.olehkv.coursework.firebase.AccountHelper
-import ua.olehkv.coursework.models.Advertisement
+import ua.olehkv.coursework.viewmodel.FirebaseViewModel
 
-class MainActivity : AppCompatActivity(), ReadDataCallback {
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val dialogHelper = DialogAuthHelper(this)
-    val mAuth = FirebaseAuth.getInstance()
+    val mAuth = Firebase.auth
     private lateinit var tvAccountEmail: TextView
-    val dbManager = DbManager(this)
-    private val adapter = AdvertisementsAdapter()
+    private val adapter = AdvertisementsAdapter(mAuth)
+    private val firebaseViewModel: FirebaseViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         init()
         initRcView()
-        dbManager.readDataFromDb()
+        initViewModel()
+        initBottomNavView()
+        firebaseViewModel.loadAllAds()
     }
 
     override fun onStart() {
         super.onStart()
         uiUpdate(mAuth.currentUser)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.included.btNavView.selectedItemId = R.id.id_home
     }
 
     private fun init() = with(binding) {
@@ -94,6 +101,13 @@ class MainActivity : AppCompatActivity(), ReadDataCallback {
 
     }
 
+    private fun initViewModel(){
+        firebaseViewModel.liveAdsData.observe(this){
+            adapter.updateAdList(it)
+        }
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -102,9 +116,8 @@ class MainActivity : AppCompatActivity(), ReadDataCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.id_new_ad -> {
-                val i = Intent(this, EditAdvertisementActivity::class.java)
-                startActivity(i)
+            R.id.id_new_ads -> {
+
             }
         }
         return super.onOptionsItemSelected(item)
@@ -128,12 +141,33 @@ class MainActivity : AppCompatActivity(), ReadDataCallback {
         }
     }
 
+    private fun initBottomNavView() = with(binding.included){
+        btNavView.setOnItemSelectedListener {
+            when(it.itemId) {
+                R.id.id_home -> {
+                    Toast.makeText(this@MainActivity, "Home", Toast.LENGTH_SHORT).show()
+                }
+                R.id.id_favs->{
+                    Toast.makeText(this@MainActivity, "Favs", Toast.LENGTH_SHORT).show()
+                }
+                R.id.id_my_ads->{
+                    Toast.makeText(this@MainActivity, "My ads", Toast.LENGTH_SHORT).show()
+                }
+                R.id.id_new_ad->{
+                    val i = Intent(this@MainActivity, EditAdvertisementActivity::class.java)
+                    startActivity(i)
+                }
+            }
+            true
+        }
+    }
+
     fun uiUpdate(user: FirebaseUser?) {
         tvAccountEmail.text = if (user == null) "Sign Up or Sign In" else user.email
     }
 
-    override fun readData(newList: ArrayList<Advertisement>) {
-        adapter.updateAdList(newList)
-    }
+//    override fun readData(newList: ArrayList<Advertisement>) {
+//        adapter.updateAdList(newList)
+//    }
 
 }

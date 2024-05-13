@@ -1,4 +1,4 @@
-package ua.olehkv.coursework.models
+package ua.olehkv.coursework.model
 
 data class Advertisement(
     val country: String? = null,
@@ -10,5 +10,6 @@ data class Advertisement(
     val title: String? = null,
     val price: String? = null,
     val description: String? = null,
-    val key: String? = null
+    val key: String? = null,
+    val uid: String? = null
 )

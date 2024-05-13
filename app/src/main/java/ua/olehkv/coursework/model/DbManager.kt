@@ -1,4 +1,4 @@
-package ua.olehkv.coursework.database
+package ua.olehkv.coursework.model
 
 
 import android.util.Log
@@ -6,12 +6,10 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.database
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import ua.olehkv.coursework.models.Advertisement
 
-class DbManager(private val readDataCallback: ReadDataCallback? = null) {
+class DbManager {
     val db = Firebase.database.getReference("main")
     val auth = Firebase.auth
 
@@ -21,7 +19,7 @@ class DbManager(private val readDataCallback: ReadDataCallback? = null) {
         }
     }
 
-    fun readDataFromDb(){
+    fun readDataFromDb(readDataCallback: ReadDataCallback?){
         db.addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val adList = ArrayList<Advertisement>()
@@ -38,5 +36,9 @@ class DbManager(private val readDataCallback: ReadDataCallback? = null) {
             }
 
         })
+    }
+
+    interface ReadDataCallback {
+        fun readData(list: ArrayList<Advertisement>)
     }
 }
