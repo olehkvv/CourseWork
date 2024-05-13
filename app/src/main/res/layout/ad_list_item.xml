@@ -5,50 +5,71 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="5dp"
-    android:layout_marginTop="5dp"
-    android:layout_marginHorizontal="5dp">
+    android:layout_margin="5dp">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingBottom="5dp"
             android:gravity="center_horizontal">
 
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:layout_marginTop="10dp"
+                android:background="@color/grey"
+                android:fontFamily="sans-serif-condensed"
                 android:gravity="center_horizontal"
-                android:textColor="@color/black"
-                 />
+                android:padding="3dp"
+
+                android:text="TextView"
+                android:textColor="#191212"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/mainImage"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_marginTop="10dp"
                 android:layout_marginHorizontal="5dp"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                android:layout_marginTop="10dp"
+                android:background="@color/grey"
+                app:srcCompat="@drawable/ic_default_image" />
 
             <TextView
                 android:id="@+id/tvDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="sans-serif-condensed"
                 android:gravity="center_horizontal"
-                android:text="Description" />
+                android:text="Description"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginHorizontal="5dp"
-                android:gravity="center_horizontal"
-                android:text="Price" />
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="sans-serif-condensed"
+                android:gravity="end"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="Price: $200"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey"
+                android:layout_marginHorizontal="20dp"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -60,6 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_eye"
+                    android:layout_marginStart="16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -67,11 +89,13 @@
                     android:id="@+id/tvViewCounter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="22324234322342"
-                    android:maxLength="3"
-                    android:scrollHorizontally="true"
+                    android:layout_marginStart="5dp"
                     android:ellipsize="end"
-                    android:layout_marginStart="4dp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:maxLength="5"
+                    android:scrollHorizontally="true"
+                    android:text="22324234322342"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="@+id/imViewCounter"
                     app:layout_constraintStart_toEndOf="@+id/imViewCounter"
                     app:layout_constraintTop_toTopOf="@+id/imViewCounter" />
@@ -90,7 +114,10 @@
                     android:id="@+id/tvFavCounter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="500"
+                    android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="@+id/imFavourite"
                     app:layout_constraintStart_toEndOf="@+id/imFavourite"
                     app:layout_constraintTop_toTopOf="@+id/imFavourite" />
@@ -116,7 +143,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-
+                    android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_delete_ad"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

@@ -36,6 +36,8 @@
     <string name="description">Description</string>
     <string name="input_description">Input description</string>
     <string name="publish">Publish</string>
+    <string name="title">Title</string>
+    <string name="input_title">Input title</string>
 
     <string name="no_result">No result</string>
     <!-- TODO: Remove or change this placeholder text -->

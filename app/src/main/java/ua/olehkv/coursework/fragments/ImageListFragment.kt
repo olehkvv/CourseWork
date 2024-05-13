@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ua.olehkv.coursework.EditAdvertisementActivity
 import ua.olehkv.coursework.R
 import ua.olehkv.coursework.adapters.SelectImageRecyclerAdapter
 import ua.olehkv.coursework.databinding.FragmentImageListBinding
@@ -76,7 +76,7 @@ class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentC
                 return@setOnMenuItemClickListener true
             }
             val imageCount = ImagePicker.MAX_IMAGE_COUNT - adapter.mainList.size
-            ImagePicker.getImages(activity as AppCompatActivity, imageCount, ImagePicker.REQUEST_CODE_GET_IMAGES)
+            ImagePicker.launcher(activity as EditAdvertisementActivity, (activity as EditAdvertisementActivity).launcherMultiSelectImages, imageCount)
             true
         }
         deleteImageItem.setOnMenuItemClickListener {

@@ -10,27 +10,33 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import ua.olehkv.coursework.adapters.AdvertisementsAdapter
 import ua.olehkv.coursework.database.DbManager
+import ua.olehkv.coursework.database.ReadDataCallback
 import ua.olehkv.coursework.databinding.ActivityMainBinding
 import ua.olehkv.coursework.dialogs.DialogConstants
 import ua.olehkv.coursework.dialogs.DialogAuthHelper
 import ua.olehkv.coursework.firebase.AccountHelper
+import ua.olehkv.coursework.models.Advertisement
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ReadDataCallback {
     private lateinit var binding: ActivityMainBinding
     private val dialogHelper = DialogAuthHelper(this)
     val mAuth = FirebaseAuth.getInstance()
     private lateinit var tvAccountEmail: TextView
-    val dbManager = DbManager()
+    val dbManager = DbManager(this)
+    private val adapter = AdvertisementsAdapter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         init()
+        initRcView()
         dbManager.readDataFromDb()
     }
 
@@ -80,6 +86,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun initRcView() = with(binding.included){
+        rcView.layoutManager = LinearLayoutManager(this@MainActivity)
+        rcView.adapter = adapter
+//        adapter.updateAdList()
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -116,6 +130,10 @@ class MainActivity : AppCompatActivity() {
 
     fun uiUpdate(user: FirebaseUser?) {
         tvAccountEmail.text = if (user == null) "Sign Up or Sign In" else user.email
+    }
+
+    override fun readData(newList: ArrayList<Advertisement>) {
+        adapter.updateAdList(newList)
     }
 
 }

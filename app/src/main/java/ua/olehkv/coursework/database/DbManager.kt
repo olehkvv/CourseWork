@@ -11,7 +11,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import ua.olehkv.coursework.models.Advertisement
 
-class DbManager {
+class DbManager(private val readDataCallback: ReadDataCallback? = null) {
     val db = Firebase.database.getReference("main")
     val auth = Firebase.auth
 
@@ -30,6 +30,7 @@ class DbManager {
                     if (ad != null) adList.add(ad)
                     Log.d("AAA", "Data: ${ad}")
                 }
+                readDataCallback?.readData(adList)
             }
 
             override fun onCancelled(error: DatabaseError) {

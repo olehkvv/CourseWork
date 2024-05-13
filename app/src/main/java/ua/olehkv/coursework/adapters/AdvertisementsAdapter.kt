@@ -8,9 +8,10 @@ import ua.olehkv.coursework.models.Advertisement
 
 class AdvertisementsAdapter: RecyclerView.Adapter<AdvertisementsAdapter.AdvertisementHolder>() {
 
-    val adList = ArrayList<Advertisement>()
+    private val adList = ArrayList<Advertisement>()
     class AdvertisementHolder(private val binding: AdListItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(ad: Advertisement) = with(binding){
+            tvTitle.text = ad.title
             tvDescription.text = ad.description
             tvPrice.text = ad.price
 

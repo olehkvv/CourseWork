@@ -22,7 +22,7 @@ class SelectImageRecyclerAdapter(private val listener: Listener): RecyclerView.A
             imContent.setImageBitmap(bitmap)
             ImageManager.chooseScaleType(imContent, bitmap)
             ibEdit.setOnClickListener {
-                ImagePicker.getImages(context as EditAdvertisementActivity, 1, ImagePicker.REQUEST_CODE_GET_SINGLE_IMAGE)
+                ImagePicker.launcher(context as EditAdvertisementActivity, context.launcherSingleSelectImages, 1)
                 context.editImagePos = adapterPosition
             }
             ibDelete.setOnClickListener {
