@@ -2,6 +2,7 @@ package ua.olehkv.coursework.model
 
 
 import android.util.Log
+import com.google.android.play.integrity.internal.ad
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -10,17 +11,28 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import ua.olehkv.coursework.EditAdvertisementActivity
+import ua.olehkv.coursework.model.DbManager.Companion.INFO_NODE
 
 class DbManager {
-    val db = Firebase.database.getReference("main")
+    val db = Firebase.database.getReference(MAIN_NODE)
     val auth = Firebase.auth
 
     fun publishAd(ad: Advertisement, finishWorkListener: FinishWorkListener){
         if(auth.uid != null){
-            db.child(ad.key ?: "empty").child(auth.uid!!).child("ad").setValue(ad)
+            db.child(ad.key ?: "empty").child(auth.uid!!).child(AD_NODE).setValue(ad)
                 .addOnCompleteListener { 
                     finishWorkListener.onLoadingFinish()
                 }
+        }
+    }
+
+    fun adViewed(ad: Advertisement) {
+        var counter = ad.viewsCount.toInt()
+        counter++
+        if(auth.uid != null){
+            db.child(ad.key ?: "empty")
+                .child(INFO_NODE).setValue(AdMetaData(counter.toString(), ad.emailsCount, ad.callsCount))
+
         }
     }
 
@@ -51,8 +63,18 @@ class DbManager {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val adList = ArrayList<Advertisement>()
                 for (item in snapshot.children) {
-                    val ad = item.children.iterator().next().child("ad").getValue(Advertisement::class.java)
-                    if (ad != null) adList.add(ad)
+                    var ad: Advertisement? = null
+                    item.children.forEach {
+                        if (ad == null )
+                            ad = it.child(AD_NODE).getValue(Advertisement::class.java)
+                    }
+                    val metaData = item.child(INFO_NODE).getValue(AdMetaData::class.java)
+                    ad?.viewsCount = metaData?.viewsCount ?: "0"
+                    ad?.emailsCount = metaData?.emailsCount ?: "0"
+                    ad?.callsCount = metaData?.callsCount ?: "0"
+
+                    if (ad != null) adList.add(ad!!)
+
                     Log.d("AAA", "Data: $ad")
                 }
                 readDataCallback?.readData(adList)
@@ -63,6 +85,12 @@ class DbManager {
             }
 
         })
+    }
+
+    companion object{
+        const val MAIN_NODE = "main"
+        const val AD_NODE = "ad"
+        const val INFO_NODE = "info"
     }
 
     interface ReadDataCallback {

@@ -32,7 +32,10 @@ class FirebaseViewModel: ViewModel() {
                 updatedList?.remove(ad)
                 liveAdsData.postValue(updatedList!!)
             }
-
         })
+    }
+
+    fun adViewed(ad: Advertisement){
+        dbManager.adViewed(ad)
     }
 }

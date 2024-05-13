@@ -180,5 +180,9 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         firebaseViewModel.deleteAd(ad)
     }
 
+    override fun onAdViewed(ad: Advertisement) {
+        firebaseViewModel.adViewed(ad)
+    }
+
 
 }

@@ -23,6 +23,7 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
             tvDescription.text = ad.description
             tvPrice.text = ad.price
             showEditPanel(isOwner(ad))
+            tvViewCounter.text = ad.viewsCount
             ibEditAd.setOnClickListener {
                 val i = Intent(mainAct, EditAdvertisementActivity::class.java).apply {
                     putExtra(EDIT_STATE, true)
@@ -33,6 +34,9 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
 
             ibDeleteAd.setOnClickListener {
                 mainAct.onDeleteClick(ad)
+            }
+            itemView.setOnClickListener {
+                mainAct.onAdViewed(ad)
             }
         }
 
@@ -68,10 +72,10 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
         diffResult.dispatchUpdatesTo(this)
         adList.clear()
         adList.addAll(newList)
-
     }
 
     interface Listener{
         fun onDeleteClick(ad: Advertisement)
+        fun onAdViewed(ad: Advertisement)
     }
 }
