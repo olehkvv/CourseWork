@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import com.fxn.utility.PermUtil
-import com.google.android.play.integrity.internal.ad
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
 import ua.olehkv.coursework.MainActivity.Companion.EDIT_STATE
 import ua.olehkv.coursework.adapters.ImageAdapter

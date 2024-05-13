@@ -34,6 +34,18 @@ class DbManager {
         readDataFromDb(query, readDataCallback)
     }
 
+    fun deleteAd(ad: Advertisement, listener: FinishWorkListener){
+        if (ad.key == null || ad.uid == null)
+            return
+        else
+            db.child(ad.key).child(ad.uid).removeValue()
+                .addOnCompleteListener {
+                    if (it.isSuccessful)
+                        listener.onLoadingFinish()
+                }
+    }
+
+
     private fun readDataFromDb(query: Query,readDataCallback: ReadDataCallback?){
         query.addListenerForSingleValueEvent(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -41,7 +53,7 @@ class DbManager {
                 for (item in snapshot.children) {
                     val ad = item.children.iterator().next().child("ad").getValue(Advertisement::class.java)
                     if (ad != null) adList.add(ad)
-                    Log.d("AAA", "Data: ${ad}")
+                    Log.d("AAA", "Data: $ad")
                 }
                 readDataCallback?.readData(adList)
             }

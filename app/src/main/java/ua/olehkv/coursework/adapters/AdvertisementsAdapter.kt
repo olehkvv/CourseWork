@@ -29,6 +29,10 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
                 }
                 mainAct.startActivity(i)
             }
+
+            ibDeleteAd.setOnClickListener {
+                mainAct.onDeleteClick(ad)
+            }
         }
 
         private fun isOwner(ad: Advertisement): Boolean{
@@ -65,6 +69,6 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
     }
 
     interface Listener{
-        fun onEditClick()
+        fun onDeleteClick(ad: Advertisement)
     }
 }

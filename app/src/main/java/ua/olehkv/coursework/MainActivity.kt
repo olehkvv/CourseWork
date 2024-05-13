@@ -22,9 +22,10 @@ import ua.olehkv.coursework.databinding.ActivityMainBinding
 import ua.olehkv.coursework.dialogs.DialogConstants
 import ua.olehkv.coursework.dialogs.DialogAuthHelper
 import ua.olehkv.coursework.firebase.AccountHelper
+import ua.olehkv.coursework.model.Advertisement
 import ua.olehkv.coursework.viewmodel.FirebaseViewModel
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     private lateinit var binding: ActivityMainBinding
     private val dialogHelper = DialogAuthHelper(this)
     val mAuth = Firebase.auth
@@ -175,8 +176,9 @@ class MainActivity : AppCompatActivity(){
         const val ADS_DATA = "ads_data"
     }
 
-//    override fun readData(newList: ArrayList<Advertisement>) {
-//        adapter.updateAdList(newList)
-//    }
+    override fun onDeleteClick(ad: Advertisement) {
+        firebaseViewModel.deleteAd(ad)
+    }
+
 
 }

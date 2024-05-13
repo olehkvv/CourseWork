@@ -9,7 +9,7 @@ class FirebaseViewModel: ViewModel() {
     private val dbManager = DbManager()
     val liveAdsData = MutableLiveData<ArrayList<Advertisement>>()
 
-    fun loadAllAds(){
+    fun loadAllAds() {
         dbManager.getAllAds(object: DbManager.ReadDataCallback{
             override fun readData(newList: ArrayList<Advertisement>) {
                 liveAdsData.value = newList
@@ -17,11 +17,22 @@ class FirebaseViewModel: ViewModel() {
         })
     }
 
-    fun loadMyAds(){
+    fun loadMyAds() {
         dbManager.getMyAds(object: DbManager.ReadDataCallback{
             override fun readData(newList: ArrayList<Advertisement>) {
                 liveAdsData.value = newList
             }
+        })
+    }
+
+    fun deleteAd(ad: Advertisement) {
+        dbManager.deleteAd(ad, object: DbManager.FinishWorkListener{
+            override fun onLoadingFinish() {
+                val updatedList = liveAdsData.value
+                updatedList?.remove(ad)
+                liveAdsData.postValue(updatedList!!)
+            }
+
         })
     }
 }
