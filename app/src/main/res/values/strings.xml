@@ -3,6 +3,8 @@
     <!-- Menu drawer strings -->
     <string name="ad_cat1">Advertisements</string>
     <string name="ad_my_ads">My ads</string>
+    <string name="all_ads">Ads</string>
+    <string name="fav_ads">Favourite ads</string>
     <string name="ad_car">Cars</string>
     <string name="ad_pc">Personal computers</string>
     <string name="ad_smartphone">Smartphones</string>

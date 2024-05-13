@@ -145,13 +145,16 @@ class MainActivity : AppCompatActivity() {
         btNavView.setOnItemSelectedListener {
             when(it.itemId) {
                 R.id.id_home -> {
-                    Toast.makeText(this@MainActivity, "Home", Toast.LENGTH_SHORT).show()
+                    firebaseViewModel.loadAllAds()
+                    toolbar.title = getString(R.string.all_ads)
                 }
                 R.id.id_favs->{
                     Toast.makeText(this@MainActivity, "Favs", Toast.LENGTH_SHORT).show()
+                    toolbar.title = getString(R.string.fav_ads)
                 }
                 R.id.id_my_ads->{
-                    Toast.makeText(this@MainActivity, "My ads", Toast.LENGTH_SHORT).show()
+                    firebaseViewModel.loadMyAds()
+                    toolbar.title = getString(R.string.ad_my_ads)
                 }
                 R.id.id_new_ad->{
                     val i = Intent(this@MainActivity, EditAdvertisementActivity::class.java)
