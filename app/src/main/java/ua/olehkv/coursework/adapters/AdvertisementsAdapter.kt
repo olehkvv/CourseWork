@@ -4,6 +4,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import ua.olehkv.coursework.EditAdvertisementActivity
@@ -63,9 +64,11 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
     }
 
     fun updateAdList(newList: ArrayList<Advertisement>){
+        val diffResult = DiffUtil.calculateDiff(DiffUtilHelper(adList, newList))
+        diffResult.dispatchUpdatesTo(this)
         adList.clear()
         adList.addAll(newList)
-        notifyDataSetChanged()
+
     }
 
     interface Listener{
