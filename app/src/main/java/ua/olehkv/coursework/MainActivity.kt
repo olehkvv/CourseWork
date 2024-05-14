@@ -85,6 +85,10 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                     dialogHelper.showSignDialog(DialogConstants.SIGN_IN_STATE)
                 }
                 R.id.id_sign_out -> {
+                    if (mAuth.currentUser?.isAnonymous == true) {
+                        drawerLayout.closeDrawer(GravityCompat.START)
+                        return@setNavigationItemSelectedListener true
+                    }
                     uiUpdate(null)
                     mAuth.signOut()
                     dialogHelper.accHelper.signOutWithGoogle()
@@ -169,7 +173,16 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     }
 
     fun uiUpdate(user: FirebaseUser?) {
-        tvAccountEmail.text = if (user == null) "Sign Up or Sign In" else user.email
+//        tvAccountEmail.text = if (user == null) "Sign Up or Sign In" else user.email
+         if(user == null){
+             dialogHelper.accHelper.signInAnonymously(object: AccountHelper.Listener{
+                 override fun onComplete() {
+                     tvAccountEmail.text = getString(R.string.guest)
+                 }
+             })
+         }
+        else if(user.isAnonymous) tvAccountEmail.text = getString(R.string.guest)
+        else if(!user.isAnonymous) tvAccountEmail.text = "${user.displayName}\n${user.email}"
     }
 
 

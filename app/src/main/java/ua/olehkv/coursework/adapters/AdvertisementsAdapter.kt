@@ -44,7 +44,8 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
                 mainAct.onAdViewed(ad)
             }
             imFavourite.setOnClickListener {
-                mainAct.onFavClicked(ad)
+                if (mainAct.mAuth.currentUser?.isAnonymous == false)
+                    mainAct.onFavClicked(ad)
             }
         }
 
