@@ -2,11 +2,13 @@ package ua.olehkv.coursework.fragments
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.view.get
@@ -25,7 +27,7 @@ import ua.olehkv.coursework.utils.ImageManager
 import ua.olehkv.coursework.utils.ImagePicker
 import ua.olehkv.coursework.utils.ItemTouchMoveCallback
 
-class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) : BaseAdsFragment(),
+class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) : BaseAdsFragment(),
     InterstitialAdListener,
     SelectImageRecyclerAdapter.Listener {
     lateinit var binding: FragmentImageListBinding
@@ -51,9 +53,9 @@ class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentC
         touchHelper.attachToRecyclerView(binding.rcView)
         binding.rcView.layoutManager = LinearLayoutManager(activity)
         binding.rcView.adapter = adapter
-        if (newList != null) {
-            resizeSelectedImages(newList, true)
-        }
+//        if (newList != null) {
+//            resizeSelectedImages(newList, true)
+//        }
 
 
     }
@@ -66,6 +68,8 @@ class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentC
         toolbar.inflateMenu(R.menu.menu_choose_image)
         addImageItem = toolbar.menu.findItem(R.id.id_add_image)
         val deleteImageItem = toolbar.menu.findItem(R.id.id_delete_image)
+        if (adapter.mainList.size == 3)
+            addImageItem?.isVisible = false
 
         toolbar.setNavigationOnClickListener {
             showInterstitialAd()
@@ -76,7 +80,7 @@ class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentC
                 return@setOnMenuItemClickListener true
             }
             val imageCount = ImagePicker.MAX_IMAGE_COUNT - adapter.mainList.size
-            ImagePicker.launcher(activity as EditAdvertisementActivity, (activity as EditAdvertisementActivity).launcherMultiSelectImages, imageCount)
+            ImagePicker.addImages(activity as EditAdvertisementActivity, imageCount)
             true
         }
         deleteImageItem.setOnMenuItemClickListener {
@@ -86,15 +90,18 @@ class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentC
         }
     }
 
-    fun updateAdapter(newList: ArrayList<String>){
-        resizeSelectedImages(newList, false)
+    fun updateAdapter(newList: ArrayList<Uri>, act: Activity){
+        resizeSelectedImages(newList, false, act)
+//        act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+// Show status bar
+        act.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    fun setSingleImage(uri: String, position: Int){
+    fun setSingleImage(uri: Uri, position: Int){
         val pBar = binding.rcView[position].findViewById<ProgressBar>(R.id.pBar)
         job = CoroutineScope(Dispatchers.Main).launch {
             pBar.visibility = View.VISIBLE
-            val bitmapList = ImageManager.imageResize(listOf(uri))
+            val bitmapList = ImageManager.imageResize(listOf(uri), activity as Activity)
             pBar.visibility = View.GONE
             adapter.mainList[position] = bitmapList[0]
             adapter.notifyItemChanged(position)
@@ -103,12 +110,12 @@ class ImageListFragment(private val newList: ArrayList<String>?, val onFragmentC
 
     }
 
-    private fun resizeSelectedImages(newList: ArrayList<String>, sholdClear: Boolean){
+    fun resizeSelectedImages(newList: ArrayList<Uri>, shouldClear: Boolean, act: Activity){
         job = CoroutineScope(Dispatchers.Main).launch {
-            val dialog = ProgressDialog.showDialog(activity as Activity)
-            val bitmapList = ImageManager.imageResize(newList)
+            val dialog = ProgressDialog.showDialog(act)
+            val bitmapList = ImageManager.imageResize(newList, act)
             dialog.dismiss()
-            adapter.updateAdapter(bitmapList, sholdClear)
+            adapter.updateAdapter(bitmapList, shouldClear)
             if (adapter.mainList.size == 3)
                 addImageItem?.isVisible = false
         }

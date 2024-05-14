@@ -3,7 +3,6 @@ package ua.olehkv.coursework.adapters
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ua.olehkv.coursework.EditAdvertisementActivity
@@ -22,7 +21,7 @@ class SelectImageRecyclerAdapter(private val listener: Listener): RecyclerView.A
             imContent.setImageBitmap(bitmap)
             ImageManager.chooseScaleType(imContent, bitmap)
             ibEdit.setOnClickListener {
-                ImagePicker.launcher(context as EditAdvertisementActivity, context.launcherSingleSelectImages, 1)
+                ImagePicker.getSingleImage(context as EditAdvertisementActivity)
                 context.editImagePos = adapterPosition
             }
             ibDelete.setOnClickListener {

@@ -56,7 +56,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
 
     // Image Picker
-    implementation("com.fxn769:pix:1.5.6")
+    implementation("io.ak1.pix:piximagepicker:1.6.3")
     // Picasso
     implementation("com.squareup.picasso:picasso:2.8")
     // AdMob

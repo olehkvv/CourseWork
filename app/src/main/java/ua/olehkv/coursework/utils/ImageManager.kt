@@ -1,14 +1,17 @@
 package ua.olehkv.coursework.utils
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.Log
 
 import android.view.Surface
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
-import com.fxn.pix.Pix
+//import com.fxn.pix.Pix
 import com.google.android.play.integrity.internal.i
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.InputStream
 
 
 object ImageManager { // for large bitmaps
@@ -26,29 +30,32 @@ object ImageManager { // for large bitmaps
         val height: Int,
     )
 
-    fun getImageSize(uri: String): ImageDimension {
+    fun getImageSize(uri: Uri, act: Activity): ImageDimension {
+        val inputStream = act.contentResolver.openInputStream(uri)
+
         val options = BitmapFactory.Options().apply {
             inJustDecodeBounds = true
         }
-        BitmapFactory.decodeFile(uri, options)
-        return if(imageRotation(uri) == 90)
-            ImageDimension(options.outHeight, options.outWidth)
-        else ImageDimension(options.outWidth, options.outHeight)
+        BitmapFactory.decodeStream(inputStream, null, options)
+//        return if(imageRotation(fTemp) == 90)
+//            ImageDimension(options.outHeight, options.outWidth)
+//        else ImageDimension(options.outWidth, options.outHeight)
+        return ImageDimension(options.outWidth, options.outHeight)
     }
 
-    private fun imageRotation(uri: String): Int{
-        val rotation: Int
-        val imageFile = File(uri)
-        val exif = ExifInterface(imageFile.absolutePath)
-        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-        rotation = if (orientation == ExifInterface.ORIENTATION_ROTATE_90
-            || orientation == ExifInterface.ORIENTATION_ROTATE_270)
-            90
-        else 0
-
-
-        return rotation
-    }
+//    private fun imageRotation(imageFile: File): Int{
+//        val rotation: Int
+////        val imageFile = File(uri)
+//        val exif = ExifInterface(imageFile.absolutePath)
+//        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+//        rotation = if (orientation == ExifInterface.ORIENTATION_ROTATE_90
+//            || orientation == ExifInterface.ORIENTATION_ROTATE_270)
+//            90
+//        else 0
+//
+//
+//        return rotation
+//    }
 
     fun chooseScaleType(imView: ImageView, bitmap: Bitmap){
         if (bitmap.width > bitmap.height)
@@ -56,12 +63,12 @@ object ImageManager { // for large bitmaps
         else imView.scaleType = ImageView.ScaleType.CENTER_INSIDE
     }
 
-    suspend fun imageResize(uris: List<String>): ArrayList<Bitmap> = withContext(Dispatchers.IO){
+    suspend fun imageResize(uris: List<Uri>, act: Activity): ArrayList<Bitmap> = withContext(Dispatchers.IO){
         val tempList = ArrayList<ImageDimension>()
         val bitmapList = ArrayList<Bitmap>()
 
         for (n in uris.indices){
-            val size = getImageSize(uris[n])
+            val size = getImageSize(uris[n], act)
             Log.d("AAA", "size: width = ${size.width}, height = ${size.height}")
             val imageRatio = size.width.toDouble() / size.height.toDouble()
 
@@ -82,7 +89,7 @@ object ImageManager { // for large bitmaps
 
         for (i in uris.indices) {
             val e = runCatching {
-                val requestCreator = Picasso.get().load(File(uris[i]))
+                val requestCreator = Picasso.get().load(uris[i])
                 val resized = requestCreator.resize(tempList[i].width, tempList[i].height).get()
                 bitmapList.add(resized)
             }
@@ -91,6 +98,12 @@ object ImageManager { // for large bitmaps
 
         return@withContext bitmapList
     }
+
+//    private fun File.copyInputStreamToFile(inputStream: InputStream){
+//        this.outputStream().use { out ->
+//            inputStream.copyTo(out)
+//        }
+//    }
 
 
 }

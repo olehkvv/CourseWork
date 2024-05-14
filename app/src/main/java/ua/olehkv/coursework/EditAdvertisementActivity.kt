@@ -1,13 +1,11 @@
 package ua.olehkv.coursework
 
-import android.content.Intent
-import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import com.fxn.utility.PermUtil
+//import com.fxn.utility.PermUtil
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
 import ua.olehkv.coursework.MainActivity.Companion.EDIT_STATE
 import ua.olehkv.coursework.adapters.ImageAdapter
@@ -27,8 +25,8 @@ class EditAdvertisementActivity: AppCompatActivity() {
     private val dbManager = DbManager()
     var chooseImageFrag: ImageListFragment? = null
     var editImagePos = 0
-    var launcherMultiSelectImages: ActivityResultLauncher<Intent>? = null
-    var launcherSingleSelectImages: ActivityResultLauncher<Intent>? = null
+//    var launcherMultiSelectImages: ActivityResultLauncher<Intent>? = null
+//    var launcherSingleSelectImages: ActivityResultLauncher<Intent>? = null
     private var isEditState = false
     private var ad: Advertisement? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +38,8 @@ class EditAdvertisementActivity: AppCompatActivity() {
     }
 
     private fun init() = with(binding){
-        launcherMultiSelectImages = ImagePicker.getLauncherForMultiSelectImages(this@EditAdvertisementActivity)
-        launcherSingleSelectImages = ImagePicker.getLauncherForSingleImage(this@EditAdvertisementActivity)
+//        launcherMultiSelectImages = ImagePicker.getMultiSelectImages(this@EditAdvertisementActivity)
+//        launcherSingleSelectImages = ImagePicker.getLauncherForSingleImage(this@EditAdvertisementActivity)
 
         tvChooseCountry.setOnClickListener{
             val listCountry = CityHelper.getAllCountries(this@EditAdvertisementActivity)
@@ -68,8 +66,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
 
         ibOpenPicker.setOnClickListener {
             if(imageAdapter.imageList.size == 0)
-                ImagePicker.launcher(this@EditAdvertisementActivity,
-                    launcherMultiSelectImages,
+                ImagePicker.getMultiImages(this@EditAdvertisementActivity,
                     ImagePicker.MAX_IMAGE_COUNT)
             else {
                 openChooseImageFragment(null)
@@ -144,12 +141,15 @@ class EditAdvertisementActivity: AppCompatActivity() {
     }
 
 
-    fun openChooseImageFragment(newList: ArrayList<String>?){
-        chooseImageFrag = ImageListFragment(newList) { list ->
+    fun openChooseImageFragment(newList: ArrayList<Uri>?){
+        chooseImageFrag = ImageListFragment() { list ->
             binding.scrollViewMain.visibility = View.VISIBLE
             binding.viewPagerImages.setCurrentItem(0, false)
             imageAdapter.updateList(list)
             chooseImageFrag = null
+        }
+        if (newList != null) {
+            chooseImageFrag?.resizeSelectedImages(newList, true, this)
         }
         binding.scrollViewMain.visibility = View.GONE
         supportFragmentManager
@@ -161,27 +161,27 @@ class EditAdvertisementActivity: AppCompatActivity() {
 
 
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when(requestCode){
-            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    isImagesPermissionGranted = true
-                    ImagePicker.launcher(this@EditAdvertisementActivity,
-                        launcherMultiSelectImages,
-                        ImagePicker.MAX_IMAGE_COUNT)
-                }
-                else {
-                    isImagesPermissionGranted = false
-                    Toast.makeText(this, "Approve permissions to open image picker", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        when(requestCode){
+//            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
+//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+//                    isImagesPermissionGranted = true
+//                    ImagePicker.launcher(this@EditAdvertisementActivity,
+//                        launcherMultiSelectImages,
+//                        ImagePicker.MAX_IMAGE_COUNT)
+//                }
+//                else {
+//                    isImagesPermissionGranted = false
+//                    Toast.makeText(this, "Approve permissions to open image picker", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
+//    }
 
 
 

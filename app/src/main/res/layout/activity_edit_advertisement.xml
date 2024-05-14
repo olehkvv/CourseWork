@@ -5,14 +5,16 @@
     android:id="@+id/placeHolder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:fitsSystemWindows="true"
     android:background="@color/grey"
     tools:context=".EditAdvertisementActivity">
 
     <ScrollView
         android:id="@+id/scrollViewMain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="2dp"
+        android:padding="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
