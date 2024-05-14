@@ -1,10 +1,13 @@
 package ua.olehkv.coursework
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.google.android.gms.tasks.OnCompleteListener
 //import com.fxn.utility.PermUtil
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
 import ua.olehkv.coursework.MainActivity.Companion.EDIT_STATE
@@ -16,6 +19,7 @@ import ua.olehkv.coursework.fragments.ImageListFragment
 import ua.olehkv.coursework.model.Advertisement
 import ua.olehkv.coursework.utils.CityHelper
 import ua.olehkv.coursework.utils.ImagePicker
+import java.io.ByteArrayOutputStream
 
 class EditAdvertisementActivity: AppCompatActivity() {
     lateinit var binding: ActivityEditAdvertisementBinding
@@ -25,6 +29,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
     private val dbManager = DbManager()
     var chooseImageFrag: ImageListFragment? = null
     var editImagePos = 0
+    private var imageIndex = 0
 //    var launcherMultiSelectImages: ActivityResultLauncher<Intent>? = null
 //    var launcherSingleSelectImages: ActivityResultLauncher<Intent>? = null
     private var isEditState = false
@@ -86,15 +91,17 @@ class EditAdvertisementActivity: AppCompatActivity() {
         }
 
         btPublish.setOnClickListener {
-            val tempAd = fillAd()
+            ad = fillAd()
             if(isEditState)
                 //  add a callback to avoid the case when we switch to MainActivity,
                 // and the data has not yet had time to load on FireBase
-                dbManager.publishAd(tempAd .copy(key = ad?.key)) // don't overwrite key for edited ads otherwise it creates a new ad
-                { finish() } // when ad loaded on Firebase
+                ad?.copy(key = ad?.key)?.let { it1 ->
+                    dbManager.publishAd(it1) // don't overwrite key for edited ads otherwise it creates a new ad
+                    { finish() }
+                } // when ad loaded on Firebase
             else {
-                dbManager.publishAd(tempAd)
-                { finish() }
+//                dbManager.publishAd(tempAd) { finish() }
+                uploadAllImages()
             }
         }
 
@@ -111,6 +118,9 @@ class EditAdvertisementActivity: AppCompatActivity() {
             title = edTitle.text.toString(),
             price = edPrice.text.toString(),
             description = edDescription.text.toString(),
+            mainImage = "empty",
+            image2 = "empty",
+            image3 = "empty",
             favCount = "0",
             key = dbManager.db.push().key, // generates unique key
             uid = dbManager.auth.uid
@@ -158,31 +168,45 @@ class EditAdvertisementActivity: AppCompatActivity() {
             .commit()
     }
 
+    private fun uploadAllImages() {
+        if (imageAdapter.imageList.size == imageIndex){
+            dbManager.publishAd(ad!!) { finish() }
+            return
+        }
+        val byteArray = prepareImageByteArray(imageAdapter.imageList[imageIndex])
+        uploadImage(byteArray) {
+            Log.d("AAA", "image URI = ${it.result }")
+//            dbManager.publishAd(ad!!) { finish() }
+            nextImage(it.result.toString())
+        }
+    }
 
+    private fun nextImage(uri: String){
+        setImageUriToAd(uri)
+        imageIndex++
+        uploadAllImages()
+    }
+    private fun setImageUriToAd(uri: String) {
+        when(imageIndex){
+            0 -> ad = ad?.copy(mainImage = uri)
+            1 -> ad = ad?.copy(image2 = uri)
+            2 -> ad = ad?.copy(image3 = uri)
+        }
+    }
 
+    private fun prepareImageByteArray(bitmap: Bitmap): ByteArray {
+        val outStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, outStream)
+        return outStream.toByteArray()
+    }
 
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        when(requestCode){
-//            PermUtil.REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS -> {
-//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-//                    isImagesPermissionGranted = true
-//                    ImagePicker.launcher(this@EditAdvertisementActivity,
-//                        launcherMultiSelectImages,
-//                        ImagePicker.MAX_IMAGE_COUNT)
-//                }
-//                else {
-//                    isImagesPermissionGranted = false
-//                    Toast.makeText(this, "Approve permissions to open image picker", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//        }
-//    }
-
-
-
+    private fun uploadImage(byteArray: ByteArray, listener: OnCompleteListener<Uri>) {
+        val imStorageRef = dbManager.dbStorage
+            .child(dbManager.auth.uid!!)
+            .child("image_${System.currentTimeMillis()}")
+        val uploadTask = imStorageRef.putBytes(byteArray)
+        uploadTask.continueWithTask {
+            task -> imStorageRef.downloadUrl
+        }.addOnCompleteListener(listener)
+    }
 }

@@ -121,12 +121,6 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        onFragmentClose(adapter.mainList)
-        job?.cancel()
-    }
-
     override fun onItemDelete() {
         addImageItem?.isVisible = true
     }
@@ -136,6 +130,8 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
             ?.beginTransaction()
             ?.remove(this@ImageListFragment)
             ?.commit()
+        onFragmentClose(adapter.mainList)
+        job?.cancel()
     }
 
 

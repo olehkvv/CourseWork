@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.squareup.picasso.Picasso
 import ua.olehkv.coursework.EditAdvertisementActivity
 import ua.olehkv.coursework.MainActivity
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
@@ -26,6 +27,7 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
             showEditPanel(isOwner(ad))
             tvViewCounter.text = ad.viewsCount
             tvFavCounter.text = ad.favCount
+            Picasso.get().load(ad.mainImage).into(mainImage)
             if (ad.isFav) imFavourite.setImageResource(R.drawable.ic_fav_pressed)
             else imFavourite.setImageResource(R.drawable.ic_fav_normal)
 

@@ -3,6 +3,7 @@ package ua.olehkv.coursework.utils
 import android.net.Uri
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.google.android.play.integrity.internal.f
 import io.ak1.pix.helpers.PixEventCallback
 import io.ak1.pix.helpers.addPixToActivity
 import io.ak1.pix.models.Mode
@@ -48,12 +49,10 @@ object ImagePicker {
 
     }
     fun addImages(edAct: EditAdvertisementActivity, imageCount: Int) {
-        val f = edAct.chooseImageFrag
         edAct.addPixToActivity(R.id.placeHolder, getOptions(imageCount)) { result ->
             when (result.status) {
                 PixEventCallback.Status.SUCCESS -> {  //use results as it.data
-                    edAct.chooseImageFrag = f
-                    openChooseImageFrag(edAct, f!!)
+                    openChooseImageFrag(edAct)
                     edAct.chooseImageFrag!!.updateAdapter(result.data as ArrayList<Uri>, edAct)
                 }
 
@@ -65,12 +64,10 @@ object ImagePicker {
 
     }
     fun getSingleImage(edAct: EditAdvertisementActivity) {
-        val f = edAct.chooseImageFrag
         edAct.addPixToActivity(R.id.placeHolder, getOptions(1)) { result ->
             when (result.status) {
                 PixEventCallback.Status.SUCCESS -> {  //use results as it.data
-                    edAct.chooseImageFrag = f
-                    openChooseImageFrag(edAct, f!!)
+                    openChooseImageFrag(edAct)
                     singleImage(edAct, result.data[0])
                 }
                 PixEventCallback.Status.BACK_PRESSED -> { // back pressed called
@@ -80,14 +77,11 @@ object ImagePicker {
         }
     }
 
-    private fun openChooseImageFrag(edAct:EditAdvertisementActivity, f: Fragment){
+    private fun openChooseImageFrag(edAct:EditAdvertisementActivity){
         edAct.supportFragmentManager
             .beginTransaction()
-            .replace(R.id.placeHolder, f)
+            .replace(R.id.placeHolder, edAct.chooseImageFrag!!)
             .commit()
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-// Show status bar
-//        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     private fun closePixFragment(edAct: EditAdvertisementActivity) {
