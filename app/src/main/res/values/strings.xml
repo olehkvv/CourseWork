@@ -17,6 +17,7 @@
 
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="empty">Empty</string>
 
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>

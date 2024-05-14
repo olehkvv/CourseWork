@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -105,6 +106,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     private fun initViewModel(){
         firebaseViewModel.liveAdsData.observe(this){
             adapter.updateAdList(it)
+            binding.included.tvEmpty.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
         }
 
     }
@@ -146,16 +148,16 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         btNavView.setOnItemSelectedListener {
             when(it.itemId) {
                 R.id.id_home -> {
-                    firebaseViewModel.loadAllAds()
                     toolbar.title = getString(R.string.all_ads)
+                    firebaseViewModel.loadAllAds()
                 }
                 R.id.id_favs->{
-                    Toast.makeText(this@MainActivity, "Favs", Toast.LENGTH_SHORT).show()
                     toolbar.title = getString(R.string.fav_ads)
+                    firebaseViewModel.loadMyFavs()
                 }
                 R.id.id_my_ads->{
-                    firebaseViewModel.loadMyAds()
                     toolbar.title = getString(R.string.ad_my_ads)
+                    firebaseViewModel.loadMyAds()
                 }
                 R.id.id_new_ad->{
                     val i = Intent(this@MainActivity, EditAdvertisementActivity::class.java)
@@ -182,6 +184,10 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     override fun onAdViewed(ad: Advertisement) {
         firebaseViewModel.adViewed(ad)
+    }
+
+    override fun onFavClicked(ad: Advertisement) {
+        firebaseViewModel.onFavClicked(ad)
     }
 
 

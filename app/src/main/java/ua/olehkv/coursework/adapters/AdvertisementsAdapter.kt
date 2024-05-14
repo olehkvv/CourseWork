@@ -11,6 +11,7 @@ import ua.olehkv.coursework.EditAdvertisementActivity
 import ua.olehkv.coursework.MainActivity
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
 import ua.olehkv.coursework.MainActivity.Companion.EDIT_STATE
+import ua.olehkv.coursework.R
 import ua.olehkv.coursework.databinding.AdListItemBinding
 import ua.olehkv.coursework.model.Advertisement
 
@@ -24,6 +25,10 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
             tvPrice.text = ad.price
             showEditPanel(isOwner(ad))
             tvViewCounter.text = ad.viewsCount
+            tvFavCounter.text = ad.favCount
+            if (ad.isFav) imFavourite.setImageResource(R.drawable.ic_fav_pressed)
+            else imFavourite.setImageResource(R.drawable.ic_fav_normal)
+
             ibEditAd.setOnClickListener {
                 val i = Intent(mainAct, EditAdvertisementActivity::class.java).apply {
                     putExtra(EDIT_STATE, true)
@@ -37,6 +42,9 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
             }
             itemView.setOnClickListener {
                 mainAct.onAdViewed(ad)
+            }
+            imFavourite.setOnClickListener {
+                mainAct.onFavClicked(ad)
             }
         }
 
@@ -77,5 +85,6 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
     interface Listener{
         fun onDeleteClick(ad: Advertisement)
         fun onAdViewed(ad: Advertisement)
+        fun onFavClicked(ad: Advertisement)
     }
 }

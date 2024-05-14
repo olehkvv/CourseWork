@@ -26,18 +26,13 @@ class DbManager {
         }
     }
 
-    fun adViewed(ad: Advertisement) {
-        var counter = ad.viewsCount.toInt()
-        counter++
-        if(auth.uid != null){
-            db.child(ad.key ?: "empty")
-                .child(INFO_NODE).setValue(AdMetaData(counter.toString(), ad.emailsCount, ad.callsCount))
-
-        }
-    }
-
     fun getMyAds(readDataCallback: ReadDataCallback?){
         val query = db.orderByChild(auth.uid + "/ad/uid").equalTo(auth.uid)
+        readDataFromDb(query, readDataCallback)
+    }
+
+    fun getMyFavs(readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild("/$FAVS_NODE/${auth.uid}").equalTo(auth.currentUser?.displayName)
         readDataFromDb(query, readDataCallback)
     }
 
@@ -57,6 +52,42 @@ class DbManager {
                 }
     }
 
+    fun adViewed(ad: Advertisement) {
+        var counter = ad.viewsCount.toInt()
+        counter++
+        if(auth.uid != null){
+            db.child(ad.key ?: "empty")
+                .child(INFO_NODE).setValue(AdMetaData(counter.toString(), ad.emailsCount, ad.callsCount))
+        }
+    }
+
+    fun onFavClicked(ad: Advertisement, listener: FinishWorkListener){
+        if (ad.isFav)
+            removeFromFavourites(ad, listener)
+        else addToFavourites(ad, listener)
+    }
+    private fun addToFavourites(ad: Advertisement, listener: FinishWorkListener){
+        ad.key?.let {
+            auth.uid?.let { uid -> db.child(it).child(FAVS_NODE).child(uid).setValue(auth.currentUser?.displayName)
+                .addOnCompleteListener {
+                    if (it.isSuccessful)
+                        listener.onLoadingFinish()
+                }
+            }
+        }
+    }
+
+    private fun removeFromFavourites(ad: Advertisement, listener: FinishWorkListener){
+        ad.key?.let {
+            auth.uid?.let { uid -> db.child(it).child(FAVS_NODE).child(uid).removeValue()
+                .addOnCompleteListener {
+                    if (it.isSuccessful)
+                        listener.onLoadingFinish()
+                }
+            }
+        }
+    }
+
 
     private fun readDataFromDb(query: Query,readDataCallback: ReadDataCallback?){
         query.addListenerForSingleValueEvent(object: ValueEventListener{
@@ -69,6 +100,13 @@ class DbManager {
                             ad = it.child(AD_NODE).getValue(Advertisement::class.java)
                     }
                     val metaData = item.child(INFO_NODE).getValue(AdMetaData::class.java)
+                    val favCount = item.child(FAVS_NODE).childrenCount
+                    val isFav = auth.uid?.let {
+                        item.child(FAVS_NODE).child(it).getValue(String::class.java)
+                    } // check if current user liked this ad
+
+                    ad?.isFav = isFav != null
+                    ad?.favCount = favCount.toString()
                     ad?.viewsCount = metaData?.viewsCount ?: "0"
                     ad?.emailsCount = metaData?.emailsCount ?: "0"
                     ad?.callsCount = metaData?.callsCount ?: "0"
@@ -91,6 +129,7 @@ class DbManager {
         const val MAIN_NODE = "main"
         const val AD_NODE = "ad"
         const val INFO_NODE = "info"
+        const val FAVS_NODE = "favs"
     }
 
     interface ReadDataCallback {

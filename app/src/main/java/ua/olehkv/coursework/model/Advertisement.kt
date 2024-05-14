@@ -14,6 +14,8 @@ data class Advertisement(
     val description: String? = null,
     val key: String? = null,
     val uid: String? = null,
+    var isFav: Boolean = false,
+    var favCount: String = "0",
 
     var viewsCount: String = "0",
     var emailsCount: String = "0",

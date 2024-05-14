@@ -19,8 +19,16 @@ class FirebaseViewModel: ViewModel() {
 
     fun loadMyAds() {
         dbManager.getMyAds(object: DbManager.ReadDataCallback{
-            override fun readData(newList: ArrayList<Advertisement>) {
-                liveAdsData.value = newList
+            override fun readData(list: ArrayList<Advertisement>) {
+                liveAdsData.value = list
+            }
+        })
+    }
+
+    fun loadMyFavs(){
+        dbManager.getMyFavs(object: DbManager.ReadDataCallback{
+            override fun readData(list: ArrayList<Advertisement>) {
+                liveAdsData.value = list
             }
         })
     }
@@ -31,6 +39,20 @@ class FirebaseViewModel: ViewModel() {
                 val updatedList = liveAdsData.value
                 updatedList?.remove(ad)
                 liveAdsData.postValue(updatedList!!)
+            }
+        })
+    }
+
+    fun onFavClicked(ad: Advertisement){
+        dbManager.onFavClicked(ad, object : DbManager.FinishWorkListener{
+            override fun onLoadingFinish() {
+                val updatedList = liveAdsData.value!!
+                val pos = updatedList.indexOf(ad)
+                if (pos != -1) {
+                    val favCount = if(ad.isFav) ad.favCount.toInt() - 1 else ad.favCount.toInt() + 1
+                    updatedList[pos] = updatedList[pos].copy(isFav = !ad.isFav, favCount = favCount.toString())
+                }
+                liveAdsData.postValue(updatedList)
             }
         })
     }

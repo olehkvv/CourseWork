@@ -10,7 +10,7 @@
         android:title="Favourites"
         android:icon="@drawable/ic_fav_normal"/>
     <item
-        android:id="@+id/my_ads"
+        android:id="@+id/id_my_ads"
         android:title="My ads"
         android:icon="@drawable/ic_my_ads"/>
     <item

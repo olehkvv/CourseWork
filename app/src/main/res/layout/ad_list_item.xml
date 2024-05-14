@@ -26,7 +26,7 @@
 
                 android:text="TextView"
                 android:textColor="#191212"
-                android:textSize="18sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <ImageView
@@ -47,7 +47,7 @@
                 android:fontFamily="sans-serif-condensed"
                 android:gravity="center_horizontal"
                 android:text="Description"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -62,7 +62,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="5dp"
                 android:text="Price: $200"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <View
@@ -78,10 +78,11 @@
 
                 <ImageView
                     android:id="@+id/imViewCounter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_eye"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginStart="16dp"
+                    android:src="@drawable/ic_eye"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -89,12 +90,13 @@
                     android:id="@+id/tvViewCounter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="6dp"
                     android:ellipsize="end"
                     android:fontFamily="sans-serif-condensed"
                     android:maxLength="5"
                     android:scrollHorizontally="true"
                     android:text="0"
+                    android:textSize="20sp"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="@+id/imViewCounter"
                     app:layout_constraintStart_toEndOf="@+id/imViewCounter"
@@ -102,11 +104,12 @@
 
                 <ImageButton
                     android:id="@+id/imFavourite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="12dp"
                     android:background="@android:color/transparent"
                     android:src="@drawable/ic_fav_normal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/tvViewCounter"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -114,9 +117,10 @@
                     android:id="@+id/tvFavCounter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="6dp"
                     android:fontFamily="sans-serif-condensed"
                     android:text="0"
+                    android:textSize="20sp"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="@+id/imFavourite"
                     app:layout_constraintStart_toEndOf="@+id/imFavourite"
@@ -126,12 +130,15 @@
 
                 <ImageButton
                     android:id="@+id/ibEditAd"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/ic_edit_image"
                     android:background="@android:color/transparent"
-                    android:layout_marginEnd="16dp"
-                    app:tint="#4A558A"
+                    android:layout_marginEnd="5dp"
+                    app:tint="@color/primary_color"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="Edit Ad"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/ibDeleteAd"
 
@@ -140,14 +147,17 @@
 
                 <ImageButton
                     android:id="@+id/ibDeleteAd"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="@android:color/transparent"
                     android:layout_marginEnd="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:src="@drawable/ic_delete_ad"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="Delete Ad" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

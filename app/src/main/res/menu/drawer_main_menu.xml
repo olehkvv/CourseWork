@@ -7,9 +7,9 @@
         android:title="@string/ad_cat1">
 
         <menu>
-            <item
-                android:id="@+id/id_my_ads"
-                android:title="@string/ad_my_ads"/>
+<!--            <item-->
+<!--                android:id="@+id/id_my_ads"-->
+<!--                android:title="@string/ad_my_ads"/>-->
             <item
                 android:id="@+id/id_car"
                 android:title="@string/ad_car"/>

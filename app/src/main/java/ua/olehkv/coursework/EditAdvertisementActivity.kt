@@ -104,7 +104,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
     }
 
     private fun fillAd(): Advertisement = with(binding){
-         Advertisement(
+        Advertisement(
             country = tvChooseCountry.text.toString(),
             city = tvChooseCity.text.toString(),
             tel = edTelNumber.text.toString(),
@@ -114,6 +114,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
             title = edTitle.text.toString(),
             price = edPrice.text.toString(),
             description = edDescription.text.toString(),
+            favCount = "0",
             key = dbManager.db.push().key, // generates unique key
             uid = dbManager.auth.uid
         )
