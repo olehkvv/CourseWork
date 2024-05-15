@@ -29,6 +29,7 @@
     <string name="country">Country</string>
     <string name="city">City</string>
     <string name="tel">Telephone</string>
+    <string name="enter_email">Enter email</string>
     <string name="tel_number">tel number</string>
     <string name="index">Index</string>
     <string name="with_send">With send</string>
@@ -49,13 +50,6 @@
     <!-- for AdMob -->
     <string name="ad_banner_id">ca-app-pub-3940256099942544/9214589741</string>
     <string name="ad_interstitial_id">ca-app-pub-3940256099942544/1033173712</string>
-
-
-
-
-
-
-
 
 
     <string-array name="category">

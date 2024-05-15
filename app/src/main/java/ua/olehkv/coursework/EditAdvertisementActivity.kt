@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.tasks.OnCompleteListener
 //import com.fxn.utility.PermUtil
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
@@ -18,20 +19,18 @@ import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
 import ua.olehkv.coursework.fragments.ImageListFragment
 import ua.olehkv.coursework.model.Advertisement
 import ua.olehkv.coursework.utils.CityHelper
+import ua.olehkv.coursework.utils.ImageManager
 import ua.olehkv.coursework.utils.ImagePicker
 import java.io.ByteArrayOutputStream
 
 class EditAdvertisementActivity: AppCompatActivity() {
     lateinit var binding: ActivityEditAdvertisementBinding
     val dialog = DialogSpinnerHelper()
-    var isImagesPermissionGranted = false
     lateinit var imageAdapter: ImageAdapter
     private val dbManager = DbManager()
     var chooseImageFrag: ImageListFragment? = null
     var editImagePos = 0
     private var imageIndex = 0
-//    var launcherMultiSelectImages: ActivityResultLauncher<Intent>? = null
-//    var launcherSingleSelectImages: ActivityResultLauncher<Intent>? = null
     private var isEditState = false
     private var ad: Advertisement? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,12 +39,10 @@ class EditAdvertisementActivity: AppCompatActivity() {
         setContentView(binding.root)
         init()
         checkEditState()
+        imageChangeCounter()
     }
 
     private fun init() = with(binding){
-//        launcherMultiSelectImages = ImagePicker.getMultiSelectImages(this@EditAdvertisementActivity)
-//        launcherSingleSelectImages = ImagePicker.getLauncherForSingleImage(this@EditAdvertisementActivity)
-
         tvChooseCountry.setOnClickListener{
             val listCountry = CityHelper.getAllCountries(this@EditAdvertisementActivity)
             dialog.showSpinnerDialog(this@EditAdvertisementActivity, listCountry) {
@@ -60,7 +57,6 @@ class EditAdvertisementActivity: AppCompatActivity() {
                 val listCity = CityHelper.getAllCities(
                     this@EditAdvertisementActivity,
                     selectedCountry)
-
                 dialog.showSpinnerDialog(this@EditAdvertisementActivity, listCity){
                     tvChooseCity.text = if(it == getString(R.string.no_result)) getString(R.string.choose_city) else it
                     dialog.dismiss()
@@ -71,8 +67,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
 
         ibOpenPicker.setOnClickListener {
             if(imageAdapter.imageList.size == 0)
-                ImagePicker.getMultiImages(this@EditAdvertisementActivity,
-                    ImagePicker.MAX_IMAGE_COUNT)
+                ImagePicker.getMultiImages(this@EditAdvertisementActivity, ImagePicker.MAX_IMAGE_COUNT)
             else {
                 openChooseImageFragment(null)
                 chooseImageFrag?.updateAdapterFromEdit(imageAdapter.imageList)
@@ -112,6 +107,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
             country = tvChooseCountry.text.toString(),
             city = tvChooseCity.text.toString(),
             tel = edTelNumber.text.toString(),
+            email = edEmail.text.toString(),
             index = edIndex.text.toString(),
             withSend = checkBoxWithSend.isChecked.toString(),
             category = tvSelectCategory.text.toString(),
@@ -148,6 +144,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
         edTitle.setText(ad.title)
         edPrice.setText(ad.price)
         edDescription.setText(ad.description)
+        ImageManager.fillImageArray(ad, imageAdapter)
     }
 
 
@@ -208,5 +205,17 @@ class EditAdvertisementActivity: AppCompatActivity() {
         uploadTask.continueWithTask {
             task -> imStorageRef.downloadUrl
         }.addOnCompleteListener(listener)
+
+
+    }
+    private fun imageChangeCounter() = with(binding){
+        tvImageCounter.text = "0 / ${imageAdapter.itemCount}"
+        viewPagerImages.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                val imageCounter = "${position + 1} / ${imageAdapter.itemCount}"
+                tvImageCounter.text = imageCounter
+            }
+        })
     }
 }

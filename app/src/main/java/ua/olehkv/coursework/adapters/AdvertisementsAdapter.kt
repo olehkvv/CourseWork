@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
+import ua.olehkv.coursework.DescriptionActivity
 import ua.olehkv.coursework.EditAdvertisementActivity
 import ua.olehkv.coursework.MainActivity
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA

@@ -6,6 +6,7 @@ data class Advertisement(
     val country: String? = null,
     val city: String? = null,
     val tel: String? = null,
+    val email: String? = null,
     val index: String? = null,
     val withSend: String? = null,
     val category: String? = null,
@@ -22,5 +23,6 @@ data class Advertisement(
 
     var viewsCount: String = "0",
     var emailsCount: String = "0",
-    var callsCount: String = "0"
+    var callsCount: String = "0",
+
 ): Serializable

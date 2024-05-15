@@ -46,6 +46,8 @@
                 android:layout_marginTop="5dp"
                 android:fontFamily="sans-serif-condensed"
                 android:gravity="center_horizontal"
+                android:maxLines="4"
+                android:ellipsize="end"
                 android:text="Description"
                 android:textSize="20sp"
                 android:textStyle="bold" />

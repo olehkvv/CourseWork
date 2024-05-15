@@ -6,21 +6,15 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 
-import android.view.Surface
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
-import androidx.exifinterface.media.ExifInterface
 //import com.fxn.pix.Pix
-import com.google.android.play.integrity.internal.i
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.InputStream
+import ua.olehkv.coursework.adapters.ImageAdapter
+import ua.olehkv.coursework.model.Advertisement
 
 
 object ImageManager { // for large bitmaps
@@ -99,11 +93,25 @@ object ImageManager { // for large bitmaps
         return@withContext bitmapList
     }
 
-//    private fun File.copyInputStreamToFile(inputStream: InputStream){
-//        this.outputStream().use { out ->
-//            inputStream.copyTo(out)
-//        }
-//    }
 
+    private suspend fun getBitmapFormUris(uris: List<String?>): ArrayList<Bitmap> = withContext(Dispatchers.IO){
+        val bitmapList = ArrayList<Bitmap>()
+        for (i in uris.indices) {
+            val e = runCatching {
+                val bitmap = Picasso.get().load(uris[i]).get()
+                bitmapList.add(bitmap)
+            }
+        }
+
+        return@withContext bitmapList
+    }
+
+    fun fillImageArray(ad: Advertisement, adapter: ImageAdapter) {
+        val listUris = listOf(ad.mainImage, ad.image2, ad.image3)
+        CoroutineScope(Dispatchers.Main).launch {
+            val bitmapList = getBitmapFormUris(listUris)
+            adapter.updateList(bitmapList)
+        }
+    }
 
 }

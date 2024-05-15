@@ -3,14 +3,20 @@ package ua.olehkv.coursework
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -18,6 +24,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Picasso
 import ua.olehkv.coursework.adapters.AdvertisementsAdapter
 import ua.olehkv.coursework.databinding.ActivityMainBinding
 import ua.olehkv.coursework.dialogs.DialogConstants
@@ -31,7 +38,9 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     private val dialogHelper = DialogAuthHelper(this)
     val mAuth = Firebase.auth
     private lateinit var tvAccountEmail: TextView
+    private lateinit var imAccount: ImageView
     private val adapter = AdvertisementsAdapter(this)
+    lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
     private val firebaseViewModel: FirebaseViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +50,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         initRcView()
         initViewModel()
         initBottomNavView()
+        initGoogleSignInLauncher()
         firebaseViewModel.loadAllAds()
     }
 
@@ -56,10 +66,12 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     private fun init() = with(binding) {
         setSupportActionBar(included.toolbar)
+        navViewSettings()
         val toggle = ActionBarDrawerToggle(this@MainActivity, drawerLayout, included.toolbar, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         tvAccountEmail = navView.getHeaderView(0).findViewById(R.id.tvAccountEmail)
+        imAccount = navView.getHeaderView(0).findViewById(R.id.imAccountImage)
 
         navView.setNavigationItemSelectedListener { item ->
             when(item.itemId){
@@ -131,21 +143,20 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == AccountHelper.SIGN_IN_REQUEST_CODE){
-            Log.d("AAA", "Sign In result ")
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                if (account != null){
-                    dialogHelper.accHelper.signInFirebaseWithGoogle(account.idToken!!)
-                }
-            }
-            catch (ex: ApiException){
-                Log.d("AAA", "Api error: ${ex.message} ")
-            }
-        }
+     private fun initGoogleSignInLauncher() {
+         googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+             Log.d("AAA", "Sign In result ")
+             val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+             try {
+                 val account = task.getResult(ApiException::class.java)
+                 if (account != null){
+                     dialogHelper.accHelper.signInFirebaseWithGoogle(account.idToken!!)
+                 }
+             }
+             catch (ex: ApiException){
+                 Log.d("AAA", "Api error: ${ex.message} ")
+             }
+         }
     }
 
     private fun initBottomNavView() = with(binding.included){
@@ -178,11 +189,18 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
              dialogHelper.accHelper.signInAnonymously(object: AccountHelper.Listener{
                  override fun onComplete() {
                      tvAccountEmail.text = getString(R.string.guest)
+                     imAccount.setImageResource(R.drawable.avatar)
                  }
              })
          }
-        else if(user.isAnonymous) tvAccountEmail.text = getString(R.string.guest)
-        else if(!user.isAnonymous) tvAccountEmail.text = "${user.displayName}\n${user.email}"
+        else if(user.isAnonymous) {
+             tvAccountEmail.text = getString(R.string.guest)
+             imAccount.setImageResource(R.drawable.avatar)
+         }
+        else if(!user.isAnonymous) {
+             tvAccountEmail.text = "${user.displayName}\n${user.email}"
+             Picasso.get().load(user.photoUrl).into(imAccount)
+         }
     }
 
 
@@ -197,11 +215,27 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     override fun onAdViewed(ad: Advertisement) {
         firebaseViewModel.adViewed(ad)
+        val i = Intent(this, DescriptionActivity::class.java).apply {
+            putExtra("AD", ad)
+        }
+        startActivity(i)
     }
 
     override fun onFavClicked(ad: Advertisement) {
         firebaseViewModel.onFavClicked(ad)
     }
 
+    private fun navViewSettings() = with(binding){
+        val menu = navView.menu
+        val menuIds = listOf(R.id.adsCategory, R.id.accCategory)
+        for(id in menuIds) {
+            val item: MenuItem = menu.findItem(id)
+            val spanAdsCat = SpannableString(item.title)
+            spanAdsCat.setSpan(ForegroundColorSpan(
+                ContextCompat.getColor(this@MainActivity, R.color.black)),
+                0, item.title!!.length, 0)
+            item.title = spanAdsCat
+        }
+    }
 
 }

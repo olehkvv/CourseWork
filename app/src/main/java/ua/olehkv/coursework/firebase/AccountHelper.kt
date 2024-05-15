@@ -155,8 +155,7 @@ class AccountHelper(private val activity: MainActivity) {
     fun signInWithGoogle(){
         signInClient = getSignInClient()
         val intent = signInClient.signInIntent
-        activity.startActivityForResult(intent, SIGN_IN_REQUEST_CODE)
-
+        activity.googleSignInLauncher.launch(intent)
     }
 
     fun signOutWithGoogle(){

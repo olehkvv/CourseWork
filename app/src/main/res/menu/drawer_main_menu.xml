@@ -4,6 +4,7 @@
     tools:showIn="navigation_view">
 
     <item
+        android:id="@+id/adsCategory"
         android:title="@string/ad_cat1">
 
         <menu>
@@ -30,6 +31,7 @@
     </item>
 
     <item
+        android:id="@+id/accCategory"
         android:title="@string/ad_cat2">
         <menu>
             <item
