@@ -19,6 +19,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseUser
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     private val adapter = AdvertisementsAdapter(this)
     lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
     private val firebaseViewModel: FirebaseViewModel by viewModels()
+    private var clearUpdate: Boolean = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -51,7 +53,8 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         initViewModel()
         initBottomNavView()
         initGoogleSignInLauncher()
-        firebaseViewModel.loadAllAds()
+        scrollListener()
+//        firebaseViewModel.loadAllAds("0")
     }
 
     override fun onStart() {
@@ -74,6 +77,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         imAccount = navView.getHeaderView(0).findViewById(R.id.imAccountImage)
 
         navView.setNavigationItemSelectedListener { item ->
+            clearUpdate = true
             when(item.itemId){
                 R.id.id_my_ads -> {
                     Toast.makeText(this@MainActivity, "my ads", Toast.LENGTH_SHORT).show()
@@ -121,8 +125,10 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     private fun initViewModel(){
         firebaseViewModel.liveAdsData.observe(this){
-            adapter.updateAdList(it)
-            binding.included.tvEmpty.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
+            if(!clearUpdate) {
+                adapter.updateAdList(it)
+            } else adapter.updateAdapterWithClear(it)
+            binding.included.tvEmpty.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
         }
 
     }
@@ -130,7 +136,6 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -161,10 +166,11 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     private fun initBottomNavView() = with(binding.included){
         btNavView.setOnItemSelectedListener {
+            clearUpdate = true
             when(it.itemId) {
                 R.id.id_home -> {
                     toolbar.title = getString(R.string.all_ads)
-                    firebaseViewModel.loadAllAds()
+                    firebaseViewModel.loadAllAds("0")
                 }
                 R.id.id_favs->{
                     toolbar.title = getString(R.string.fav_ads)
@@ -207,6 +213,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     companion object{
         const val EDIT_STATE = "edit_state"
         const val ADS_DATA = "ads_data"
+        const val SCROLL_DOWN = -1
     }
 
     override fun onDeleteClick(ad: Advertisement) {
@@ -223,6 +230,21 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     override fun onFavClicked(ad: Advertisement) {
         firebaseViewModel.onFavClicked(ad)
+    }
+
+    private fun scrollListener() = with(binding.included) {
+        rcView.addOnScrollListener(object: RecyclerView.OnScrollListener(){
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (recyclerView.canScrollVertically(SCROLL_DOWN) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    clearUpdate = false
+                    val adsList = firebaseViewModel.liveAdsData.value!!
+                    if (adsList.isNotEmpty()) {
+                        firebaseViewModel.loadAllAds(adsList[adsList.size - 1].time)
+                    }
+                }
+            }
+        })
     }
 
     private fun navViewSettings() = with(binding){

@@ -119,7 +119,8 @@ class EditAdvertisementActivity: AppCompatActivity() {
             image3 = "empty",
             favCount = "0",
             key = dbManager.db.push().key, // generates unique key
-            uid = dbManager.auth.uid
+            uid = dbManager.auth.uid,
+            time = System.currentTimeMillis().toString()
         )
     }
 

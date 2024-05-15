@@ -79,7 +79,18 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
         holder.bind(adList[position])
     }
 
-    fun updateAdList(newList: ArrayList<Advertisement>){
+    fun updateAdList(newList: ArrayList<Advertisement>) {
+        val tempArray = ArrayList<Advertisement>()
+        tempArray.addAll(adList)
+        tempArray.addAll(newList)
+
+        val diffResult = DiffUtil.calculateDiff(DiffUtilHelper(adList, tempArray))
+        diffResult.dispatchUpdatesTo(this)
+        adList.clear()
+        adList.addAll(tempArray)
+    }
+
+    fun updateAdapterWithClear(newList: ArrayList<Advertisement>) {
         val diffResult = DiffUtil.calculateDiff(DiffUtilHelper(adList, newList))
         diffResult.dispatchUpdatesTo(this)
         adList.clear()
