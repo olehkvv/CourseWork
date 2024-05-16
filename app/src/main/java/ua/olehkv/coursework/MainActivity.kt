@@ -83,16 +83,16 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                     Toast.makeText(this@MainActivity, "my ads", Toast.LENGTH_SHORT).show()
                 }
                 R.id.id_car -> {
-                    Toast.makeText(this@MainActivity, "car", Toast.LENGTH_SHORT).show()
+                    getAdsFromCat(getString(R.string.ad_car))
                 }
                 R.id.id_pc -> {
-                    Toast.makeText(this@MainActivity, "pc", Toast.LENGTH_SHORT).show()
+                    getAdsFromCat(getString(R.string.ad_pc))
                 }
                 R.id.id_smartphone -> {
-
+                    getAdsFromCat(getString(R.string.ad_smartphone))
                 }
                 R.id.id_dm -> {
-
+                    getAdsFromCat(getString(R.string.ad_dm))
                 }
                 R.id.id_sign_up -> {
                     dialogHelper.showSignDialog(DialogConstants.SIGN_UP_STATE)
@@ -172,21 +172,26 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                     toolbar.title = getString(R.string.all_ads)
                     firebaseViewModel.loadAllAds("0")
                 }
-                R.id.id_favs->{
+                R.id.id_favs-> {
                     toolbar.title = getString(R.string.fav_ads)
                     firebaseViewModel.loadMyFavs()
                 }
-                R.id.id_my_ads->{
+                R.id.id_my_ads-> {
                     toolbar.title = getString(R.string.ad_my_ads)
                     firebaseViewModel.loadMyAds()
                 }
-                R.id.id_new_ad->{
+                R.id.id_new_ad-> {
                     val i = Intent(this@MainActivity, EditAdvertisementActivity::class.java)
                     startActivity(i)
                 }
             }
             true
         }
+    }
+
+    private fun getAdsFromCat(category: String){
+        val catTime = "${category}_0"
+        firebaseViewModel.loadAllAdsFromCat(catTime)
     }
 
     fun uiUpdate(user: FirebaseUser?) {
@@ -240,11 +245,22 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                     clearUpdate = false
                     val adsList = firebaseViewModel.liveAdsData.value!!
                     if (adsList.isNotEmpty()) {
-                        firebaseViewModel.loadAllAds(adsList[adsList.size - 1].time)
+                        getAllAdsFromCat(adsList)
                     }
                 }
             }
         })
+    }
+
+    private fun getAllAdsFromCat(adsList: ArrayList<Advertisement>){
+        adsList[adsList.size - 1].let {
+            if (it.category == getString(R.string.all_ads)) {
+                firebaseViewModel.loadAllAds(it.time)
+            } else {
+                val catTime = "${it.category}_${it.time}"
+                firebaseViewModel.loadAllAdsFromCat(catTime)
+            }
+        }
     }
 
     private fun navViewSettings() = with(binding){

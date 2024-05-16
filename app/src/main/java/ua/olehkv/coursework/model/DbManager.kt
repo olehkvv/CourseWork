@@ -22,8 +22,13 @@ class DbManager {
     fun publishAd(ad: Advertisement, finishWorkListener: FinishWorkListener){
         if(auth.uid != null){
             db.child(ad.key ?: "empty").child(auth.uid!!).child(AD_NODE).setValue(ad)
-                .addOnCompleteListener { 
-                    finishWorkListener.onLoadingFinish()
+                .addOnCompleteListener {
+                    // public filter
+                    val adFilter = AdFilter(ad.time, "${ad.category}_${ad.time}")
+                    db.child(ad.key ?: "empty").child(FILTER_NODE)
+                        .setValue(adFilter).addOnCompleteListener {
+                            finishWorkListener.onLoadingFinish()
+                        }
                 }
         }
     }
@@ -39,8 +44,14 @@ class DbManager {
     }
 
     fun getAllAds(lastTime: String, readDataCallback: ReadDataCallback?){
-        val query = db.orderByChild(auth.uid + "/ad/time")
+        val query = db.orderByChild("/adFilter/time")
             .startAfter(lastTime)
+            .limitToFirst(ADS_LIMIT)
+        readDataFromDb(query, readDataCallback)
+    }
+    fun getAllAdsFromCat(lastCatTime: String, readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild("/adFilter/catTime")
+            .startAfter(lastCatTime)
             .limitToFirst(ADS_LIMIT)
         readDataFromDb(query, readDataCallback)
     }
@@ -133,6 +144,7 @@ class DbManager {
         const val MAIN_NODE = "main"
         const val AD_NODE = "ad"
         const val INFO_NODE = "info"
+        const val FILTER_NODE = "adFilter"
         const val FAVS_NODE = "favs"
         const val ADS_LIMIT = 2
     }
