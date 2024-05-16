@@ -2,7 +2,6 @@ package ua.olehkv.coursework.model
 
 
 import android.util.Log
-import com.google.android.play.integrity.internal.ad
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -11,8 +10,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import ua.olehkv.coursework.EditAdvertisementActivity
-import ua.olehkv.coursework.model.DbManager.Companion.INFO_NODE
 
 class DbManager {
     val db = Firebase.database.getReference(MAIN_NODE)
@@ -43,16 +40,29 @@ class DbManager {
         readDataFromDb(query, readDataCallback)
     }
 
-    fun getAllAds(lastTime: String, readDataCallback: ReadDataCallback?){
+    fun getAllAdsFirstPage(readDataCallback: ReadDataCallback?){
         val query = db.orderByChild("/adFilter/time")
-            .startAfter(lastTime)
-            .limitToFirst(ADS_LIMIT)
+            .limitToLast(ADS_LIMIT)
         readDataFromDb(query, readDataCallback)
     }
-    fun getAllAdsFromCat(lastCatTime: String, readDataCallback: ReadDataCallback?){
+    fun getAllAdsNextPage(time: String, readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild("/adFilter/time")
+            .endBefore(time)
+            .limitToLast(ADS_LIMIT)
+        readDataFromDb(query, readDataCallback)
+    }
+    fun getAllAdsFromCatFirstPage(category: String, readDataCallback: ReadDataCallback?){
         val query = db.orderByChild("/adFilter/catTime")
-            .startAfter(lastCatTime)
-            .limitToFirst(ADS_LIMIT)
+            .startAt(category)
+            .endAt(category + "_\uf8ff")
+            .limitToLast(ADS_LIMIT)
+        readDataFromDb(query, readDataCallback)
+    }
+
+    fun getAllAdsFromCatNextPage(catTime: String, readDataCallback: ReadDataCallback?){
+        val query = db.orderByChild("/adFilter/catTime")
+            .endBefore(catTime)
+            .limitToLast(ADS_LIMIT)
         readDataFromDb(query, readDataCallback)
     }
 
