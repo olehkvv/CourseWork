@@ -42,9 +42,12 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     private lateinit var imAccount: ImageView
     private val adapter = AdvertisementsAdapter(this)
     lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
+    lateinit var filterLauncher: ActivityResultLauncher<Intent>
     private val firebaseViewModel: FirebaseViewModel by viewModels()
     private var clearUpdate: Boolean = true
     private lateinit var currentCategory: String
+    private var filter: String = "empty"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -53,7 +56,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         initRcView()
         initViewModel()
         initBottomNavView()
-        initGoogleSignInLauncher()
+        initLaunchers()
         scrollListener()
 //        firebaseViewModel.loadAllAds("0")
     }
@@ -156,15 +159,17 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.id_new_ads -> {
-
+            R.id.id_filter -> {
+                val i = Intent(this@MainActivity, FilterActivity::class.java)
+                i.putExtra(FILTER_KEY, filter) // for saving filter state
+                filterLauncher.launch(i)
             }
         }
         return super.onOptionsItemSelected(item)
 
     }
 
-     private fun initGoogleSignInLauncher() {
+     private fun initLaunchers() {
          googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
              Log.d("AAA", "Sign In result ")
              val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
@@ -176,6 +181,13 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
              }
              catch (ex: ApiException){
                  Log.d("AAA", "Api error: ${ex.message} ")
+             }
+         }
+
+         filterLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+             if (it.resultCode == RESULT_OK) {
+                 filter = it.data?.getStringExtra(FILTER_KEY)!!
+                 Toast.makeText(this, "Got filter: $filter", Toast.LENGTH_SHORT).show()
              }
          }
     }
@@ -236,6 +248,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         const val EDIT_STATE = "edit_state"
         const val ADS_DATA = "ads_data"
         const val SCROLL_DOWN = -1
+        const val FILTER_KEY = "filter_key"
     }
 
     override fun onDeleteClick(ad: Advertisement) {
@@ -279,6 +292,8 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
             }
         }
     }
+
+
 
     private fun navViewSettings() = with(binding){
         val menu = navView.menu
