@@ -147,6 +147,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
         edTitle.setText(ad.title)
         edPrice.setText(ad.price)
         edDescription.setText(ad.description)
+        updateImageCounter(0)
         ImageManager.fillImageArray(ad, imageAdapter)
     }
 
@@ -157,6 +158,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
             binding.viewPagerImages.setCurrentItem(0, false)
             imageAdapter.updateList(list)
             chooseImageFrag = null
+            updateImageCounter(binding.viewPagerImages.currentItem)
         }
         if (newList != null) {
             chooseImageFrag?.resizeSelectedImages(newList, true, this)
@@ -252,13 +254,21 @@ class EditAdvertisementActivity: AppCompatActivity() {
 
     }
     private fun imageChangeCounter() = with(binding){
-        tvImageCounter.text = "0 / ${imageAdapter.itemCount}"
+//        tvImageCounter.text = "0 / ${imageAdapter.itemCount}"
         viewPagerImages.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                val imageCounter = "${position + 1} / ${imageAdapter.itemCount}"
-                tvImageCounter.text = imageCounter
+                updateImageCounter(position)
             }
         })
+    }
+
+    private fun updateImageCounter(counter: Int) {
+        var index = 1
+        val itemCount = binding.viewPagerImages.adapter?.itemCount
+        if (itemCount == 0)
+            index = 0
+        val imageCounter = "${counter + index} / $itemCount"
+        binding.tvImageCounter.text = imageCounter
     }
 }
