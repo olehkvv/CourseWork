@@ -61,11 +61,29 @@ class DbManager {
             .endAt(filter + "\uf8ff")
             .limitToLast(ADS_LIMIT)
     }
-    fun getAllAdsNextPage(time: String, readDataCallback: ReadDataCallback?) {
-        val query = db.orderByChild("/adFilter/time")
-            .endBefore(time)
+    fun getAllAdsNextPage(time: String, filter: String, readDataCallback: ReadDataCallback?) {
+        if(filter.isEmpty()) {
+           val query = db.orderByChild("/adFilter/time")
+                .endBefore(time)
+                .limitToLast(ADS_LIMIT)
+
+            readDataFromDb(query, readDataCallback)
+        }
+        else{
+            getAllAdsByFilterNextPage(filter, time, readDataCallback)
+        }
+
+    }
+
+    fun getAllAdsByFilterNextPage(tempFilter: String, time: String, readDataCallback: ReadDataCallback?) {
+        Log.d("filt", "tempFilter = $tempFilter: ")
+        val orderBy = tempFilter.split("|")[0]
+        val filter = tempFilter.split("|")[1]
+        val query =  db.orderByChild("/adFilter/$orderBy")
+            .endBefore(filter + "_$time")
             .limitToLast(ADS_LIMIT)
-        readDataFromDb(query, readDataCallback)
+
+        readNextPageFromDb(query, filter, orderBy, readDataCallback)
     }
     fun getAllAdsFromCatFirstPage(category: String, filter: String, readDataCallback: ReadDataCallback?){
         val query = if (filter.isEmpty()) {
@@ -92,11 +110,27 @@ class DbManager {
     }
 
 
-    fun getAllAdsFromCatNextPage(catTime: String, readDataCallback: ReadDataCallback?){
-        val query = db.orderByChild("/adFilter/cat_time")
-            .endBefore(catTime)
+    fun getAllAdsFromCatNextPage(cat: String, time: String, filter: String, readDataCallback: ReadDataCallback?){
+        if (filter.isEmpty()){
+            val query = db.orderByChild("/adFilter/cat_time")
+                .endBefore(cat + "_" + time)
+                .limitToLast(ADS_LIMIT)
+            readDataFromDb(query, readDataCallback)
+        } else {
+            getAllAdsFromCatByFilterNextPage(cat, time, filter, readDataCallback)
+        }
+
+    }
+
+    fun getAllAdsFromCatByFilterNextPage(cat: String, time: String, tempFilter: String, readDataCallback: ReadDataCallback?) {
+        Log.d("filt", "tempFilter = $tempFilter: ")
+        val orderBy = "cat_" + tempFilter.split("|")[0]
+        val filter = cat + "_" + tempFilter.split("|")[1]
+        val query = db.orderByChild("/adFilter/$orderBy")
+            .endBefore(filter + "_" + time)
             .limitToLast(ADS_LIMIT)
-        readDataFromDb(query, readDataCallback)
+
+        readNextPageFromDb(query, filter, orderBy, readDataCallback)
     }
 
     fun deleteAd(ad: Advertisement, listener: FinishWorkListener){
@@ -182,6 +216,45 @@ class DbManager {
 
         })
     }
+
+    private fun readNextPageFromDb(query: Query, filter: String, orderBy: String, readDataCallback: ReadDataCallback?){
+        query.addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val adList = ArrayList<Advertisement>()
+                for (item in snapshot.children) {
+                    var ad: Advertisement? = null
+                    item.children.forEach {
+                        if (ad == null )
+                            ad = it.child(AD_NODE).getValue(Advertisement::class.java)
+                    }
+                    val metaData = item.child(INFO_NODE).getValue(AdMetaData::class.java)
+                    val filterNodeValue = item.child(FILTER_NODE).child(orderBy).value.toString()
+
+                    val favCount = item.child(FAVS_NODE).childrenCount
+                    val isFav = auth.uid?.let {
+                        item.child(FAVS_NODE).child(it).getValue(String::class.java)
+                    } // check if current user liked this ad
+
+                    ad?.isFav = isFav != null
+                    ad?.favCount = favCount.toString()
+                    ad?.viewsCount = metaData?.viewsCount ?: "0"
+                    ad?.emailsCount = metaData?.emailsCount ?: "0"
+                    ad?.callsCount = metaData?.callsCount ?: "0"
+
+                    if (ad != null && filterNodeValue.startsWith(filter)) adList.add(ad!!)
+
+                    Log.d("AAA", "Data: $ad")
+                }
+                readDataCallback?.readData(adList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
 
     companion object {
         const val MAIN_NODE = "main"
