@@ -342,7 +342,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
 
     private fun navViewSettings() = with(binding){
         val menu = navView.menu
-        val menuIds = listOf(R.id.adsCategory, R.id.accCategory)
+        val menuIds = listOf(R.id.adsCategory, R.id.accCategory, R.id.purchaseCategory)
         for(id in menuIds) {
             val item: MenuItem = menu.findItem(id)
             val spanAdsCat = SpannableString(item.title)

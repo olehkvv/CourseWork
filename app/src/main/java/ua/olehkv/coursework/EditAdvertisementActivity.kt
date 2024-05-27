@@ -87,23 +87,23 @@ class EditAdvertisementActivity: AppCompatActivity() {
 
         btPublish.setOnClickListener {
             ad = fillAd()
-            if(isEditState)
-                //  add a callback to avoid the case when we switch to MainActivity,
-                // and the data has not yet had time to load on FireBase
-                ad?.copy(key = ad?.key)?.let { it1 ->
-                    dbManager.publishAd(it1) // don't overwrite key for edited ads otherwise it creates a new ad
-                    { finish() }
-                } // when ad loaded on Firebase
-            else {
-//                dbManager.publishAd(tempAd) { finish() }
-                uploadAllImages()
-            }
+//            if(isEditState)
+//                //  add a callback to avoid the case when we switch to MainActivity,
+//                // and the data has not yet had time to load on FireBase
+//                dbManager.publishAd(ad!!) // don't overwrite key for edited ads otherwise it creates a new ad
+//                    { finish() }
+//                 // when ad loaded on Firebase
+//            else {
+////                dbManager.pu blishAd(tempAd) { finish() }
+//                uploadAllImages()
+//            }
+            uploadAllImages()
         }
 
     }
 
     private fun fillAd(): Advertisement = with(binding){
-        Advertisement(
+        val adTemp = Advertisement(
             country = tvChooseCountry.text.toString(),
             city = tvChooseCity.text.toString(),
             tel = edTelNumber.text.toString(),
@@ -114,14 +114,16 @@ class EditAdvertisementActivity: AppCompatActivity() {
             title = edTitle.text.toString(),
             price = edPrice.text.toString(),
             description = edDescription.text.toString(),
-            mainImage = "empty",
-            image2 = "empty",
-            image3 = "empty",
+            mainImage = ad?.mainImage ?: "empty",
+            image2 = ad?.image2 ?: "empty",
+            image3 = ad?.image3 ?: "empty",
             favCount = "0",
-            key = dbManager.db.push().key, // generates unique key
+            key = ad?.key ?: dbManager.db.push().key, // generates unique key
             uid = dbManager.auth.uid,
-            time = System.currentTimeMillis().toString()
+            time = ad?.time ?: System.currentTimeMillis().toString()
         )
+
+        return@with adTemp
     }
 
     private fun checkEditState(){
@@ -167,15 +169,34 @@ class EditAdvertisementActivity: AppCompatActivity() {
     }
 
     private fun uploadAllImages() {
-        if (imageAdapter.imageList.size == imageIndex){
+        if (imageIndex == 3) {
             dbManager.publishAd(ad!!) { finish() }
             return
         }
-        val byteArray = prepareImageByteArray(imageAdapter.imageList[imageIndex])
-        uploadImage(byteArray) {
-            Log.d("AAA", "image URI = ${it.result }")
-//            dbManager.publishAd(ad!!) { finish() }
-            nextImage(it.result.toString())
+        val oldUrl = getUrlFromAd()
+        if (imageAdapter.imageList.size > imageIndex) {
+            val byteArray = prepareImageByteArray(imageAdapter.imageList[imageIndex])
+            if (oldUrl.startsWith("http")){
+                updateImage(byteArray, oldUrl) {
+                    nextImage(it.result.toString())
+                }
+            } else {
+                uploadImage(byteArray) {
+                    Log.d("AAA", "image URI = ${it.result}")
+                    //dbManager.publishAd(ad!!) { finish() }
+                    nextImage(it.result.toString())
+                }
+            }
+
+        } else {
+            if (oldUrl.startsWith("http")) {
+                deleteImageByUrl(oldUrl) {
+                    nextImage("empty")
+                }
+            }
+            else {
+                nextImage("empty")
+            }
         }
     }
 
@@ -192,6 +213,10 @@ class EditAdvertisementActivity: AppCompatActivity() {
         }
     }
 
+    private fun getUrlFromAd(): String{
+        return listOf(ad?.mainImage!!, ad?.image2!!, ad?.image3!!)[imageIndex]
+    }
+
     private fun prepareImageByteArray(bitmap: Bitmap): ByteArray {
         val outStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 20, outStream)
@@ -205,6 +230,23 @@ class EditAdvertisementActivity: AppCompatActivity() {
         val uploadTask = imStorageRef.putBytes(byteArray)
         uploadTask.continueWithTask {
             task -> imStorageRef.downloadUrl
+        }.addOnCompleteListener(listener)
+    }
+
+    private fun deleteImageByUrl(oldUrl: String, listener: OnCompleteListener<Void>) {
+        dbManager.dbStorage
+            .storage
+            .getReferenceFromUrl(oldUrl)
+            .delete()
+            .addOnCompleteListener(listener)
+    }
+
+    private fun updateImage(byteArray: ByteArray, url: String, listener: OnCompleteListener<Uri>) {
+        val imStorageRef = dbManager.dbStorage
+            .storage.getReferenceFromUrl(url)
+        val uploadTask = imStorageRef.putBytes(byteArray)
+        uploadTask.continueWithTask {
+                task -> imStorageRef.downloadUrl
         }.addOnCompleteListener(listener)
 
 
