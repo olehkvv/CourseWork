@@ -32,6 +32,7 @@ import ua.olehkv.coursework.dialogs.DialogConstants
 import ua.olehkv.coursework.dialogs.DialogAuthHelper
 import ua.olehkv.coursework.firebase.AccountHelper
 import ua.olehkv.coursework.model.Advertisement
+import ua.olehkv.coursework.utils.FilterManager
 import ua.olehkv.coursework.viewmodel.FirebaseViewModel
 
 class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     private var clearUpdate: Boolean = true
     private lateinit var currentCategory: String
     private var filter: String = "empty"
+    private var filterDb: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,7 +189,14 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
          filterLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
              if (it.resultCode == RESULT_OK) {
                  filter = it.data?.getStringExtra(FILTER_KEY)!!
+                 filterDb = FilterManager.getFilter(filter)
                  Toast.makeText(this, "Got filter: $filter", Toast.LENGTH_SHORT).show()
+                 Log.d("filt", "Got filter: $filter")
+                 Log.d("filt", "filterDb = : $filterDb")
+             }
+             else if (it.resultCode == RESULT_CANCELED) {
+                 filterDb = ""
+                 filter = "empty"
              }
          }
     }
@@ -199,7 +208,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                 R.id.id_home -> {
                     currentCategory = getString(R.string.all_ads)
                     toolbar.title = getString(R.string.all_ads)
-                    firebaseViewModel.loadAllAdsFirstPage()
+                    firebaseViewModel.loadAllAdsFirstPage(filterDb)
                 }
                 R.id.id_favs-> {
                     toolbar.title = getString(R.string.fav_ads)
@@ -218,29 +227,27 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         }
     }
 
-    private fun getAdsFromCat(category: String){
+    private fun getAdsFromCat(category: String) {
         currentCategory = category
-        firebaseViewModel.loadAllAdsFromCat(category)
+        firebaseViewModel.loadAllAdsFromCat(category, filterDb)
     }
 
     fun uiUpdate(user: FirebaseUser?) {
 //        tvAccountEmail.text = if (user == null) "Sign Up or Sign In" else user.email
-         if(user == null){
-             dialogHelper.accHelper.signInAnonymously(object: AccountHelper.Listener{
-                 override fun onComplete() {
-                     tvAccountEmail.text = getString(R.string.guest)
-                     imAccount.setImageResource(R.drawable.avatar)
-                 }
-             })
-         }
-        else if(user.isAnonymous) {
-             tvAccountEmail.text = getString(R.string.guest)
-             imAccount.setImageResource(R.drawable.avatar)
-         }
-        else if(!user.isAnonymous) {
-             tvAccountEmail.text = "${user.displayName}\n${user.email}"
-             Picasso.get().load(user.photoUrl).into(imAccount)
-         }
+        if (user == null) {
+            dialogHelper.accHelper.signInAnonymously(object : AccountHelper.Listener {
+                override fun onComplete() {
+                    tvAccountEmail.text = getString(R.string.guest)
+                    imAccount.setImageResource(R.drawable.avatar)
+                }
+            })
+        } else if (user.isAnonymous) {
+            tvAccountEmail.text = getString(R.string.guest)
+            imAccount.setImageResource(R.drawable.avatar)
+        } else if (!user.isAnonymous) {
+            tvAccountEmail.text = "${user.displayName}\n${user.email}"
+            Picasso.get().load(user.photoUrl).into(imAccount)
+        }
     }
 
 

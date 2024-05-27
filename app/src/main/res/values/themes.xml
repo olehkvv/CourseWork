@@ -3,6 +3,8 @@
     <style name="Base.Theme.CourseWork" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.CourseWork" parent="Base.Theme.CourseWork" />
@@ -19,6 +21,8 @@
     <style name="AppTheme.Filter" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="colorOnPrimary">@color/white</item>
 
     </style>

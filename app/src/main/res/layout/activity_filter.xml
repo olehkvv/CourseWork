@@ -132,7 +132,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="70dp"
-                android:text="Apply filters"
+                android:layout_marginTop="10dp"
+                android:text="Apply filter"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/green_main"
+                android:backgroundTint="#9E7070"/>
+
+            <Button
+                android:id="@+id/btClearFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="70dp"
+                android:layout_marginTop="10dp"
+                android:text="Clear filter"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/green_main"

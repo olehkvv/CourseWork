@@ -53,6 +53,14 @@ class FilterActivity : AppCompatActivity() {
             finish()
         }
 
+        btClearFilter.setOnClickListener {
+            tvChooseCountry.text = getString(R.string.choose_country)
+            tvChooseCity.text = getString(R.string.choose_city)
+            edIndex.text.clear()
+            checkBoxWithSend.isChecked = false
+            setResult(RESULT_CANCELED)
+        }
+
         getFilter()
     }
 
