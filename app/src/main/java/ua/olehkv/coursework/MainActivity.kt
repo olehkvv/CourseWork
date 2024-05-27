@@ -1,5 +1,6 @@
 package ua.olehkv.coursework
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -20,6 +21,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseUser
@@ -55,6 +58,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         init()
+        initAds()
         initRcView()
         initViewModel()
         initBottomNavView()
@@ -71,6 +75,17 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     override fun onResume() {
         super.onResume()
         binding.included.btNavView.selectedItemId = R.id.id_home
+        binding.included.adView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.included.adView.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.included.adView.destroy()
     }
 
     private fun init() = with(binding) {
@@ -122,6 +137,12 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         }
     }
 
+    private fun initAds(){
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+        binding.included.adView.loadAd(adRequest)
+
+    }
 
     private fun initRcView() = with(binding.included){
         rcView.layoutManager = LinearLayoutManager(this@MainActivity)

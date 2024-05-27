@@ -74,7 +74,6 @@ abstract class BaseAdsFragment() : Fragment(), InterstitialAdListener {
         MobileAds.initialize(activity as Activity)
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
-
     }
 
     override fun onDestroy() {
