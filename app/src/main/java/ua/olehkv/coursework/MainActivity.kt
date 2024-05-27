@@ -1,6 +1,6 @@
 package ua.olehkv.coursework
 
-import android.app.Activity
+
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -35,6 +35,7 @@ import ua.olehkv.coursework.dialogs.DialogConstants
 import ua.olehkv.coursework.dialogs.DialogAuthHelper
 import ua.olehkv.coursework.firebase.AccountHelper
 import ua.olehkv.coursework.model.Advertisement
+import ua.olehkv.coursework.utils.AppMainState
 import ua.olehkv.coursework.utils.FilterManager
 import ua.olehkv.coursework.viewmodel.FirebaseViewModel
 
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        (application as AppMainState).showAdIfAvailable(this) { }
         init()
         initAds()
         initRcView()

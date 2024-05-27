@@ -61,6 +61,11 @@ dependencies {
     implementation("com.squareup.picasso:picasso:2.8")
     // AdMob
     implementation("com.google.android.gms:play-services-ads:23.1.0")
+    // Lifecycle
+    val lifecycle_version = "2.2.0"
+    implementation("androidx.lifecycle:lifecycle-extensions:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+    annotationProcessor("androidx.lifecycle:lifecycle-compiler:$lifecycle_version")
 
 
     // Tests
