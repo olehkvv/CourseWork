@@ -16,11 +16,16 @@ import ua.olehkv.coursework.MainActivity.Companion.EDIT_STATE
 import ua.olehkv.coursework.R
 import ua.olehkv.coursework.databinding.AdListItemBinding
 import ua.olehkv.coursework.model.Advertisement
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Adapter<AdvertisementsAdapter.AdvertisementHolder>() {
 
     private val adList = ArrayList<Advertisement>()
     inner class AdvertisementHolder(private val binding: AdListItemBinding): RecyclerView.ViewHolder(binding.root) {
+        private val timeFormatter = SimpleDateFormat("MMMM dd - hh:mm", Locale.getDefault())
+        private val cal = Calendar.getInstance()
         fun bind(ad: Advertisement) = with(binding){
             tvTitle.text = ad.title
             tvDescription.text = ad.description
@@ -28,6 +33,7 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
             showEditPanel(isOwner(ad))
             tvViewCounter.text = ad.viewsCount
             tvFavCounter.text = ad.favCount
+            tvPublishTime.text = getTimeFromMillis(ad.time)
             Picasso.get().load(ad.mainImage).into(mainImage)
             if (ad.isFav) imFavourite.setImageResource(R.drawable.ic_fav_pressed)
             else imFavourite.setImageResource(R.drawable.ic_fav_normal)
@@ -52,6 +58,10 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
             }
         }
 
+        private fun getTimeFromMillis(millis: String): String{
+            cal.timeInMillis = millis.toLong()
+            return timeFormatter.format(cal.time)
+        }
         private fun isOwner(ad: Advertisement): Boolean{
             return ad.uid == mainAct.mAuth.uid
         }
