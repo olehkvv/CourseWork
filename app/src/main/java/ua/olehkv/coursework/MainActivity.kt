@@ -2,6 +2,7 @@ package ua.olehkv.coursework
 
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableString
@@ -36,6 +37,7 @@ import ua.olehkv.coursework.dialogs.DialogAuthHelper
 import ua.olehkv.coursework.firebase.AccountHelper
 import ua.olehkv.coursework.model.Advertisement
 import ua.olehkv.coursework.utils.AppMainState
+import ua.olehkv.coursework.utils.BillingManager
 import ua.olehkv.coursework.utils.FilterManager
 import ua.olehkv.coursework.viewmodel.FirebaseViewModel
 
@@ -53,14 +55,23 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     private lateinit var currentCategory: String
     private var filter: String = "empty"
     private var filterDb: String = ""
+    private lateinit var prefs: SharedPreferences
+    private var isPremiumUser = false
+    private lateinit var billingManager: BillingManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        (application as AppMainState).showAdIfAvailable(this) { }
+        prefs = getSharedPreferences(BillingManager.MAIN_PREF, MODE_PRIVATE)
+        isPremiumUser = prefs.getBoolean(BillingManager.REMOVE_ADS_PREF, false)
+        if (!isPremiumUser){
+            (application as AppMainState).showAdIfAvailable(this) { }
+            initAds()
+        } else{
+            binding.included.adView.visibility = View.GONE
+        }
         init()
-        initAds()
         initRcView()
         initViewModel()
         initBottomNavView()
@@ -88,6 +99,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     override fun onDestroy() {
         super.onDestroy()
         binding.included.adView.destroy()
+        billingManager.closeConnection()
     }
 
     private fun init() = with(binding) {
@@ -132,6 +144,10 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                     uiUpdate(null)
                     mAuth.signOut()
                     dialogHelper.accHelper.signOutWithGoogle()
+                }
+                R.id.id_remove_ads -> {
+                    billingManager = BillingManager(this@MainActivity)
+                    billingManager.startConnection()
                 }
             }
             drawerLayout.closeDrawer(GravityCompat.START)

@@ -47,5 +47,16 @@
         </menu>
     </item>
 
+    <item
+        android:id="@+id/purchaseCategory"
+        android:title="Remove in-app advertisements">
+        <menu>
+            <item
+                android:id="@+id/id_remove_ads"
+                android:title="@string/remove_ads"/>
+
+        </menu>
+    </item>
+
 
 </menu>

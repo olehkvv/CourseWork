@@ -66,6 +66,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-extensions:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
     annotationProcessor("androidx.lifecycle:lifecycle-compiler:$lifecycle_version")
+    // billing
+    implementation("com.android.billingclient:billing:4.0.0")
 
 
     // Tests

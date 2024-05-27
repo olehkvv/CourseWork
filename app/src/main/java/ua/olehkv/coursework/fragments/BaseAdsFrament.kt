@@ -1,8 +1,10 @@
 package ua.olehkv.coursework.fragments
 
 import android.app.Activity
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -13,21 +15,26 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import ua.olehkv.coursework.R
+import ua.olehkv.coursework.utils.BillingManager
 
 
 abstract class BaseAdsFragment() : Fragment(), InterstitialAdListener {
-
-
     lateinit var adView: AdView
     var interstitialAd: InterstitialAd? = null
+    private var prefs: SharedPreferences? = null
+    private var isPremiumUser = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        loadInterstitialAd()
-    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initAds()
+        prefs = activity?.getSharedPreferences(BillingManager.MAIN_PREF, AppCompatActivity.MODE_PRIVATE)
+        isPremiumUser = prefs?.getBoolean(BillingManager.REMOVE_ADS_PREF, false)!!
+        if (!isPremiumUser) {
+            initAds()
+            loadInterstitialAd()
+        } else {
+            adView.visibility = View.GONE
+        }
     }
 
     private fun loadInterstitialAd(){
