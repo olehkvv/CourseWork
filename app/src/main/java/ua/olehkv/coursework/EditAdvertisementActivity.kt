@@ -86,6 +86,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
         }
 
         btPublish.setOnClickListener {
+            progressLayout.visibility = View.VISIBLE
             ad = fillAd()
 //            if(isEditState)
 //                //  add a callback to avoid the case when we switch to MainActivity,
@@ -172,7 +173,10 @@ class EditAdvertisementActivity: AppCompatActivity() {
 
     private fun uploadAllImages() {
         if (imageIndex == 3) {
-            dbManager.publishAd(ad!!) { finish() }
+            dbManager.publishAd(ad!!) { isDone ->
+                binding.progressLayout.visibility = View.GONE
+                if (isDone) finish()
+            }
             return
         }
         val oldUrl = getUrlFromAd()

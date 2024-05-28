@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
     private lateinit var imAccount: ImageView
     private val adapter = AdvertisementsAdapter(this)
     lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
-    lateinit var filterLauncher: ActivityResultLauncher<Intent>
+    private lateinit var filterLauncher: ActivityResultLauncher<Intent>
     private val firebaseViewModel: FirebaseViewModel by viewModels()
     private var clearUpdate: Boolean = true
     private lateinit var currentCategory: String

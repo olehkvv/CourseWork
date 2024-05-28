@@ -42,7 +42,7 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentImageListBinding.inflate(layoutInflater)
+        binding = FragmentImageListBinding.inflate(layoutInflater, container, false)
         adView = binding.adView
         return binding.root
     }
