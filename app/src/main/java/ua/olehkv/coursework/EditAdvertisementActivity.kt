@@ -86,8 +86,9 @@ class EditAdvertisementActivity: AppCompatActivity() {
         }
 
         btPublish.setOnClickListener {
-            progressLayout.visibility = View.VISIBLE
-            ad = fillAd()
+            if (isFieldsCorrect()){
+                progressLayout.visibility = View.VISIBLE
+                ad = fillAd()
 //            if(isEditState)
 //                //  add a callback to avoid the case when we switch to MainActivity,
 //                // and the data has not yet had time to load on FireBase
@@ -98,7 +99,8 @@ class EditAdvertisementActivity: AppCompatActivity() {
 ////                dbManager.pu blishAd(tempAd) { finish() }
 //                uploadAllImages()
 //            }
-            uploadAllImages()
+                uploadAllImages()
+            }
         }
 
     }
@@ -204,6 +206,54 @@ class EditAdvertisementActivity: AppCompatActivity() {
                 nextImage("empty")
             }
         }
+    }
+
+    private fun isFieldsCorrect(): Boolean = with(binding){
+        if (!isValidEmail(edEmail.text.toString())){
+            Toast.makeText(this@EditAdvertisementActivity, "Enter correct email (some@email.com)", Toast.LENGTH_SHORT).show()
+            return@with false
+        }
+        if (!isPhoneNumberValid(edTelNumber.text.toString())){
+            Toast.makeText(this@EditAdvertisementActivity, "Enter correct phone number (starts with \"0\" or \"+\")", Toast.LENGTH_SHORT).show()
+            return@with false
+        }
+        if (tvChooseCountry.text.toString() == getString(R.string.choose_country)){
+            Toast.makeText(this@EditAdvertisementActivity, "Choose country!", Toast.LENGTH_SHORT).show()
+            return@with false
+        }
+        if (tvChooseCity.text.toString() == getString(R.string.choose_city)){
+            Toast.makeText(this@EditAdvertisementActivity, "Choose city!", Toast.LENGTH_SHORT).show()
+            return@with false
+        }
+        if (tvSelectCategory.text.toString() == getString(R.string.select_category)){
+            Toast.makeText(this@EditAdvertisementActivity, "Choose category!", Toast.LENGTH_SHORT).show()
+            return@with false
+        }
+        if (edIndex.text.isBlank()){
+            Toast.makeText(this@EditAdvertisementActivity, "Enter index!", Toast.LENGTH_SHORT).show()
+            return@with false
+        }
+        if (edPrice.text.isBlank()){
+            Toast.makeText(this@EditAdvertisementActivity, "Enter price!", Toast.LENGTH_SHORT).show()
+            return@with false
+        }
+        if (edTitle.text.isBlank()){
+            Toast.makeText(this@EditAdvertisementActivity, "Enter title!", Toast.LENGTH_SHORT).show()
+            return@with false
+        }
+
+
+
+        return@with true
+    }
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
+        return email.matches(emailRegex) && email.isNotBlank()
+    }
+
+    fun isPhoneNumberValid(number: String): Boolean {
+        return number.startsWith("+") || number.startsWith("0") && number.length >= 9
     }
 
     private fun nextImage(uri: String){

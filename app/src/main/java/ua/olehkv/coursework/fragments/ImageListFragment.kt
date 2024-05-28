@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -94,7 +96,7 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
         resizeSelectedImages(newList, false, act)
 //        act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 // Show status bar
-        act.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        act.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     fun setSingleImage(uri: Uri, position: Int){
@@ -126,6 +128,9 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
     }
 
     override fun onClose() {
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        activity?.window?.statusBarColor = ContextCompat.getColor(activity as AppCompatActivity, R.color.white)
+        activity?.window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         activity?.supportFragmentManager
             ?.beginTransaction()
             ?.remove(this@ImageListFragment)

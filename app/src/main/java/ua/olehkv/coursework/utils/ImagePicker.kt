@@ -2,6 +2,9 @@ package ua.olehkv.coursework.utils
 
 import android.net.Uri
 import android.view.View
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.play.integrity.internal.f
 import io.ak1.pix.helpers.PixEventCallback
@@ -67,6 +70,9 @@ object ImagePicker {
         edAct.addPixToActivity(R.id.placeHolder, getOptions(1)) { result ->
             when (result.status) {
                 PixEventCallback.Status.SUCCESS -> {  //use results as it.data
+                    edAct.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                    edAct.window.statusBarColor = ContextCompat.getColor(edAct as AppCompatActivity, R.color.white)
+                    edAct.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                     openChooseImageFrag(edAct)
                     singleImage(edAct, result.data[0])
                 }
@@ -82,6 +88,9 @@ object ImagePicker {
             .beginTransaction()
             .replace(R.id.placeHolder, edAct.chooseImageFrag!!)
             .commit()
+        edAct.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        edAct.window.statusBarColor = ContextCompat.getColor(edAct as AppCompatActivity, R.color.white)
+        edAct.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
     }
 
     private fun closePixFragment(edAct: EditAdvertisementActivity) {
@@ -89,14 +98,22 @@ object ImagePicker {
             val decorView: View = edAct.getWindow().getDecorView()
             val uiOptions = View.SYSTEM_UI_FLAG_VISIBLE
             decorView.systemUiVisibility = uiOptions
+            edAct.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            edAct.window.statusBarColor = ContextCompat.getColor(edAct as AppCompatActivity, R.color.white)
+            edAct.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
         val fragList = edAct.supportFragmentManager.fragments
         fragList.forEach { f ->
-            if (f.isVisible && f::class.java != ImageListFragment::class.java)
+            if (f.isVisible && f::class.java != ImageListFragment::class.java) {
                 edAct.supportFragmentManager
                     .beginTransaction()
                     .remove(f)
                     .commit()
+
+                edAct.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                edAct.window.statusBarColor = ContextCompat.getColor(edAct as AppCompatActivity, R.color.white)
+                edAct.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
         }
     }
 
