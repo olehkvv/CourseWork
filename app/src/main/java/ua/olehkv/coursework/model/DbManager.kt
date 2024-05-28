@@ -2,6 +2,7 @@ package ua.olehkv.coursework.model
 
 
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -136,12 +137,25 @@ class DbManager {
     fun deleteAd(ad: Advertisement, listener: FinishWorkListener){
         if (ad.key == null || ad.uid == null)
             return
-        else
-            db.child(ad.key).child(ad.uid).removeValue()
-                .addOnCompleteListener {
+        val map = mapOf(
+            "/adFilter" to null,
+            "/info" to null,
+            "/favs" to null,
+            "/${ad.uid}" to null,
+        )
+
+        db.child(ad.key).updateChildren(map)
+            .addOnCompleteListener {
+                try {
                     if (it.isSuccessful)
                         listener.onLoadingFinish(true)
                 }
+                catch (ex: Exception){
+
+                }
+
+            }
+
     }
 
     fun adViewed(ad: Advertisement) {

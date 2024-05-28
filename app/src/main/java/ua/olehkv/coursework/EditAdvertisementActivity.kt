@@ -144,6 +144,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
         tvChooseCountry.text = ad.country
         tvChooseCity.text = ad.city
         edTelNumber.setText(ad.tel)
+        edEmail.setText(ad.email)
         edIndex.setText(ad.index)
         checkBoxWithSend.isChecked = ad.withSend.toBoolean()
         tvSelectCategory.text = ad.category

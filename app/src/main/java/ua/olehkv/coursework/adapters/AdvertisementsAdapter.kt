@@ -29,7 +29,7 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
         fun bind(ad: Advertisement) = with(binding){
             tvTitle.text = ad.title
             tvDescription.text = ad.description
-            tvPrice.text = ad.price
+            tvPrice.text = "Price: $${ad.price}"
             showEditPanel(isOwner(ad))
             tvViewCounter.text = ad.viewsCount
             tvFavCounter.text = ad.favCount
@@ -98,6 +98,7 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
         diffResult.dispatchUpdatesTo(this)
         adList.clear()
         adList.addAll(tempArray)
+        notifyDataSetChanged()
     }
 
     fun updateAdapterWithClear(newList: ArrayList<Advertisement>) {
@@ -105,6 +106,7 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
         diffResult.dispatchUpdatesTo(this)
         adList.clear()
         adList.addAll(newList)
+        notifyDataSetChanged()
     }
 
     interface Listener{
