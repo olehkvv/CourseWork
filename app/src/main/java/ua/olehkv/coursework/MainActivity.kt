@@ -221,6 +221,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                  }
              }
              catch (ex: ApiException){
+                 Toast.makeText(this, "Google sign-in exception ${ex.message}", Toast.LENGTH_SHORT).show()
                  Log.d("AAA", "Api error: ${ex.message} ")
              }
          }
@@ -258,8 +259,12 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                     firebaseViewModel.loadMyAds()
                 }
                 R.id.id_new_ad-> {
-                    val i = Intent(this@MainActivity, EditAdvertisementActivity::class.java)
-                    startActivity(i)
+                    if(mAuth.currentUser?.isAnonymous == true){
+                        Toast.makeText(this@MainActivity, "Please log in to publish ads", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val i = Intent(this@MainActivity, EditAdvertisementActivity::class.java)
+                        startActivity(i)
+                    }
                 }
             }
             true

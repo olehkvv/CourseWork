@@ -167,13 +167,14 @@ class AccountHelper(private val activity: MainActivity) {
         activity.mAuth.currentUser?.delete()
             ?.addOnCompleteListener { task ->
                 if (task.isSuccessful){
-                    activity.mAuth.signInWithCredential(credential).addOnCompleteListener {task->
-                        if (task.isSuccessful){
+                    activity.mAuth.signInWithCredential(credential).addOnCompleteListener {task2->
+                        if (task2.isSuccessful){
                             Toast.makeText(activity, "Sign in with google is successful", Toast.LENGTH_SHORT).show()
-                            activity.uiUpdate(task.result?.user)
+                            activity.uiUpdate(task2.result?.user)
                         }
                         else{
-                            Log.d("AAA", "signInFirebaseWithGoogle error: ${task.exception}")
+                            Toast.makeText(activity, "Google sign-in exception: ${task2.exception}", Toast.LENGTH_SHORT).show()
+                            Log.d("AAA", "signInFirebaseWithGoogle error: ${task2.exception}")
                         }
                     }
                 }

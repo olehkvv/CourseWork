@@ -250,8 +250,6 @@ class EditAdvertisementActivity: AppCompatActivity() {
         uploadTask.continueWithTask {
                 task -> imStorageRef.downloadUrl
         }.addOnCompleteListener(listener)
-
-
     }
     private fun imageChangeCounter() = with(binding){
 //        tvImageCounter.text = "0 / ${imageAdapter.itemCount}"
