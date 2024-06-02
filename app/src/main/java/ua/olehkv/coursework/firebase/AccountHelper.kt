@@ -183,8 +183,8 @@ class AccountHelper(private val activity: MainActivity) {
     }
 
     private fun sendEmailVerification(user: FirebaseUser) {
-        user.sendEmailVerification().addOnCompleteListener {task ->
-            if (task.isSuccessful){
+        user.sendEmailVerification().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
                 Toast.makeText(activity, "Verification info sent to your email address", Toast.LENGTH_SHORT).show()
             }
             else {
@@ -205,7 +205,7 @@ class AccountHelper(private val activity: MainActivity) {
             }
     }
 
-    interface Listener{
+    interface Listener {
         fun onComplete()
     }
 

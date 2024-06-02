@@ -5,8 +5,6 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import com.google.android.play.integrity.internal.f
 import io.ak1.pix.helpers.PixEventCallback
 import io.ak1.pix.helpers.addPixToActivity
 import io.ak1.pix.models.Mode
@@ -31,26 +29,19 @@ object ImagePicker {
     }
 
     fun getMultiImages(edAct: EditAdvertisementActivity, imageCount: Int) {
-//        PermUtil.checkForCamaraWritePermissions(edAct){
-//            val i = Intent(edAct, Pix::class.java).apply {
-//                putExtra("options", getOptions(imageCount))
-//            }
-//            launcher?.launch(i)
-//        }
         edAct.addPixToActivity(R.id.placeHolder, getOptions(imageCount)) { result ->
             when (result.status) {
                 PixEventCallback.Status.SUCCESS -> {  //use results as it.data
                     getMultiSelectImages(edAct, result.data)
                     closePixFragment(edAct)
                 }
-
                 PixEventCallback.Status.BACK_PRESSED -> { // back pressed called
 
                 }
             }
         }
-
     }
+
     fun addImages(edAct: EditAdvertisementActivity, imageCount: Int) {
         edAct.addPixToActivity(R.id.placeHolder, getOptions(imageCount)) { result ->
             when (result.status) {
@@ -64,8 +55,8 @@ object ImagePicker {
                 }
             }
         }
-
     }
+
     fun getSingleImage(edAct: EditAdvertisementActivity) {
         edAct.addPixToActivity(R.id.placeHolder, getOptions(1)) { result ->
             when (result.status) {
@@ -118,7 +109,7 @@ object ImagePicker {
     }
 
 
-    fun getMultiSelectImages(edAct: EditAdvertisementActivity, uris: List<Uri>) {
+    private fun getMultiSelectImages(edAct: EditAdvertisementActivity, uris: List<Uri>) {
         if (uris.size > 1 && edAct.chooseImageFrag == null) {
             edAct.openChooseImageFragment(uris as ArrayList<Uri>)
         }
@@ -129,26 +120,12 @@ object ImagePicker {
                 edAct.binding.pBarLoad.visibility = View.GONE
                 edAct.imageAdapter.updateList(bitmap)
                 closePixFragment(edAct)
-//                edAct.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            }
-//                            val imgDimension = ImageManager.getImageSize(returnValues[0])
-        }
-//                    }
-//
-//                }
-    }
 
+            }
+        }
+    }
 
     private fun singleImage(edAct: EditAdvertisementActivity, uri: Uri) {
         edAct.chooseImageFrag?.setSingleImage(uri, edAct.editImagePos)
     }
-
-//            if(it.resultCode == AppCompatActivity.RESULT_OK){
-//                if (it.data != null) {
-//                    val uris = it.data?.getStringArrayListExtra(Pix.IMAGE_RESULTS)
-//                    edAct.chooseImageFrag?.setSingleImage(uris!![0]!!, edAct.editImagePos)
-//                }
-//            }
-
 }
-

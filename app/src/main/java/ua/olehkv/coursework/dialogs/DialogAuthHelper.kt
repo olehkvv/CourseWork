@@ -7,10 +7,10 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import ua.olehkv.coursework.firebase.AccountHelper
 import ua.olehkv.coursework.MainActivity
 import ua.olehkv.coursework.R
 import ua.olehkv.coursework.databinding.SignDialogBinding
+import ua.olehkv.coursework.firebase.AccountHelper
 
 class DialogAuthHelper(private val activity: MainActivity) {
     val accHelper = AccountHelper(activity)

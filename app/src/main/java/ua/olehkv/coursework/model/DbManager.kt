@@ -2,7 +2,6 @@ package ua.olehkv.coursework.model
 
 
 import android.util.Log
-import android.widget.Toast
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -53,7 +52,7 @@ class DbManager {
         readDataFromDb(query, readDataCallback)
     }
 
-    fun getAllAdsByFilterFirstPage(tempFilter: String): Query {
+    private fun getAllAdsByFilterFirstPage(tempFilter: String): Query {
         Log.d("filt", "tempFilter = $tempFilter: ")
         val orderBy = tempFilter.split("|")[0]
         val filter = tempFilter.split("|")[1]
@@ -67,16 +66,14 @@ class DbManager {
            val query = db.orderByChild("/adFilter/time")
                 .endBefore(time)
                 .limitToLast(ADS_LIMIT)
-
             readDataFromDb(query, readDataCallback)
         }
         else{
             getAllAdsByFilterNextPage(filter, time, readDataCallback)
         }
-
     }
 
-    fun getAllAdsByFilterNextPage(tempFilter: String, time: String, readDataCallback: ReadDataCallback?) {
+    private fun getAllAdsByFilterNextPage(tempFilter: String, time: String, readDataCallback: ReadDataCallback?) {
         Log.d("filt", "tempFilter = $tempFilter: ")
         val orderBy = tempFilter.split("|")[0]
         val filter = tempFilter.split("|")[1]
@@ -100,7 +97,7 @@ class DbManager {
         readDataFromDb(query, readDataCallback)
     }
 
-    fun getAllAdsFromCatByFilterFirstPage(cat: String, tempFilter: String): Query {
+    private fun getAllAdsFromCatByFilterFirstPage(cat: String, tempFilter: String): Query {
         Log.d("filt", "tempFilter = $tempFilter: ")
         val orderBy = "cat_" + tempFilter.split("|")[0]
         val filter = cat + "_" + tempFilter.split("|")[1]
@@ -123,7 +120,7 @@ class DbManager {
 
     }
 
-    fun getAllAdsFromCatByFilterNextPage(cat: String, time: String, tempFilter: String, readDataCallback: ReadDataCallback?) {
+    private fun getAllAdsFromCatByFilterNextPage(cat: String, time: String, tempFilter: String, readDataCallback: ReadDataCallback?) {
         Log.d("filt", "tempFilter = $tempFilter: ")
         val orderBy = "cat_" + tempFilter.split("|")[0]
         val filter = cat + "_" + tempFilter.split("|")[1]
@@ -134,7 +131,7 @@ class DbManager {
         readNextPageFromDb(query, filter, orderBy, readDataCallback)
     }
 
-    fun deleteAd(ad: Advertisement, listener: FinishWorkListener){
+    fun deleteAd(ad: Advertisement, listener: FinishWorkListener) {
         if (ad.key == null || ad.uid == null)
             return
         val map = mapOf(

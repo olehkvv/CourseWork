@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
-import ua.olehkv.coursework.DescriptionActivity
 import ua.olehkv.coursework.EditAdvertisementActivity
 import ua.olehkv.coursework.MainActivity
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
@@ -24,7 +22,7 @@ class AdvertisementsAdapter(private val mainAct: MainActivity): RecyclerView.Ada
 
     private val adList = ArrayList<Advertisement>()
     inner class AdvertisementHolder(private val binding: AdListItemBinding): RecyclerView.ViewHolder(binding.root) {
-        private val timeFormatter = SimpleDateFormat("MMMM dd - hh:mm", Locale.getDefault())
+        private val timeFormatter = SimpleDateFormat("MMMM dd - hh:mm a", Locale.getDefault())
         private val cal = Calendar.getInstance()
         fun bind(ad: Advertisement) = with(binding){
             tvTitle.text = ad.title

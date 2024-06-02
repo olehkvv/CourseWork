@@ -1,15 +1,14 @@
 package ua.olehkv.coursework
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import ua.olehkv.coursework.MainActivity.Companion.FILTER_KEY
 import ua.olehkv.coursework.databinding.ActivityFilterBinding
 import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
 import ua.olehkv.coursework.utils.CityHelper
-import java.lang.StringBuilder
 
 class FilterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFilterBinding

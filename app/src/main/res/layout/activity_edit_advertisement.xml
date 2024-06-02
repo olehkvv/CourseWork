@@ -362,7 +362,7 @@
                         android:background="@null"
                         android:hint="@string/input_description"
                         android:inputType="textMultiLine"
-                        android:maxLength="120"
+                        android:maxLength="300"
                         android:maxLines="5"
                         android:padding="10dp"
                         android:textColor="@color/black"

@@ -35,15 +35,15 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
     lateinit var binding: FragmentImageListBinding
     private var adapter = SelectImageRecyclerAdapter(this)
     private val dragCallback = ItemTouchMoveCallback(adapter)
-    val touchHelper = ItemTouchHelper(dragCallback)
+    private val touchHelper = ItemTouchHelper(dragCallback)
     private var job: Job? = null
-    var addImageItem: MenuItem? = null
+    private var addImageItem: MenuItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentImageListBinding.inflate(layoutInflater, container, false)
         adView = binding.adView
         return binding.root
@@ -92,14 +92,14 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
         }
     }
 
-    fun updateAdapter(newList: ArrayList<Uri>, act: Activity){
+    fun updateAdapter(newList: ArrayList<Uri>, act: Activity) {
         resizeSelectedImages(newList, false, act)
 //        act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 // Show status bar
         act.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
-    fun setSingleImage(uri: Uri, position: Int){
+    fun setSingleImage(uri: Uri, position: Int) {
         val pBar = binding.rcView[position].findViewById<ProgressBar>(R.id.pBar)
         job = CoroutineScope(Dispatchers.Main).launch {
             pBar.visibility = View.VISIBLE
@@ -108,11 +108,9 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
             adapter.mainList[position] = bitmapList[0]
             adapter.notifyItemChanged(position)
         }
-
-
     }
 
-    fun resizeSelectedImages(newList: ArrayList<Uri>, shouldClear: Boolean, act: Activity){
+    fun resizeSelectedImages(newList: ArrayList<Uri>, shouldClear: Boolean, act: Activity) {
         job = CoroutineScope(Dispatchers.Main).launch {
             val dialog = ProgressDialog.showDialog(act)
             val bitmapList = ImageManager.imageResize(newList, act)
@@ -138,6 +136,4 @@ class ImageListFragment(val onFragmentClose: (list: ArrayList<Bitmap>) -> Unit) 
         onFragmentClose(adapter.mainList)
         job?.cancel()
     }
-
-
 }

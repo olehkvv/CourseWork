@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.widget.SearchView
 import android.widget.SearchView.OnQueryTextListener
 import androidx.recyclerview.widget.LinearLayoutManager
-import ua.olehkv.coursework.R
 import ua.olehkv.coursework.adapters.SpinnerDialogRecyclerAdapter
 import ua.olehkv.coursework.databinding.SpinnerDialogLayoutBinding
 import ua.olehkv.coursework.utils.CityHelper

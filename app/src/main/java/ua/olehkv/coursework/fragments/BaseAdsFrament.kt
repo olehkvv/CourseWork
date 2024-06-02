@@ -18,20 +18,20 @@ import ua.olehkv.coursework.R
 import ua.olehkv.coursework.utils.BillingManager
 
 
-abstract class BaseAdsFragment() : Fragment(), InterstitialAdListener {
+abstract class BaseAdsFragment(): Fragment(), InterstitialAdListener {
     lateinit var adView: AdView
     var interstitialAd: InterstitialAd? = null
     private var prefs: SharedPreferences? = null
     private var isPremiumUser = false
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         prefs = activity?.getSharedPreferences(BillingManager.MAIN_PREF, AppCompatActivity.MODE_PRIVATE)
-        isPremiumUser = prefs?.getBoolean(BillingManager.REMOVE_ADS_PREF, false)!!
+//        isPremiumUser = prefs?.getBoolean(BillingManager.REMOVE_ADS_PREF, false)!!
         if (!isPremiumUser) {
             initAds()
             loadInterstitialAd()
+           // adView.visibility = View.VISIBLE
         } else {
             adView.visibility = View.GONE
         }
@@ -44,7 +44,6 @@ abstract class BaseAdsFragment() : Fragment(), InterstitialAdListener {
                 super.onAdLoaded(ad)
                 interstitialAd = ad
             }
-
             override fun onAdFailedToLoad(p0: LoadAdError) {
                 super.onAdFailedToLoad(p0)
             }
@@ -87,6 +86,4 @@ abstract class BaseAdsFragment() : Fragment(), InterstitialAdListener {
         super.onDestroy()
         adView.destroy()
     }
-
-
 }

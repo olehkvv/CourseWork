@@ -3,7 +3,6 @@ package ua.olehkv.coursework
 
 import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -18,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,8 +32,8 @@ import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import ua.olehkv.coursework.adapters.AdvertisementsAdapter
 import ua.olehkv.coursework.databinding.ActivityMainBinding
-import ua.olehkv.coursework.dialogs.DialogConstants
 import ua.olehkv.coursework.dialogs.DialogAuthHelper
+import ua.olehkv.coursework.dialogs.DialogConstants
 import ua.olehkv.coursework.firebase.AccountHelper
 import ua.olehkv.coursework.model.Advertisement
 import ua.olehkv.coursework.utils.AppMainState
@@ -63,15 +63,17 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        prefs = getSharedPreferences(BillingManager.MAIN_PREF, MODE_PRIVATE)
-        isPremiumUser = prefs.getBoolean(BillingManager.REMOVE_ADS_PREF, false)
-        if (!isPremiumUser){
-            (application as AppMainState).showAdIfAvailable(this) { }
-            initAds()
-        } else{
-            binding.included.adView.visibility = View.GONE
-        }
+//        prefs = getSharedPreferences(BillingManager.MAIN_PREF, MODE_PRIVATE)
+//        isPremiumUser = prefs.getBoolean(BillingManager.REMOVE_ADS_PREF, false)
+//        if (!isPremiumUser){
+//            (application as AppMainState).showAdIfAvailable(this) { }
+//            initAds()
+//        } else{
+//            binding.included.adView.visibility = View.GONE
+//        }
+        (application as AppMainState).showAdIfAvailable(this) { }
         init()
+        initAds()
         initRcView()
         initViewModel()
         initBottomNavView()
@@ -159,7 +161,7 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
         MobileAds.initialize(this)
         val adRequest = AdRequest.Builder().build()
         binding.included.adView.loadAd(adRequest)
-
+        binding.included.adView.visibility = View.VISIBLE
     }
 
     private fun initRcView() = with(binding.included){
@@ -259,8 +261,8 @@ class MainActivity : AppCompatActivity(), AdvertisementsAdapter.Listener{
                     firebaseViewModel.loadMyAds()
                 }
                 R.id.id_new_ad-> {
-                    if(mAuth.currentUser?.isAnonymous == true){
-                        Toast.makeText(this@MainActivity, "Please log in to publish ads", Toast.LENGTH_SHORT).show()
+                    if(mAuth.currentUser?.isAnonymous == true && mAuth.currentUser?.isEmailVerified == false) {
+                        Toast.makeText(this@MainActivity, "Please log in and verify your account to publish ads", Toast.LENGTH_SHORT).show()
                     } else {
                         val i = Intent(this@MainActivity, EditAdvertisementActivity::class.java)
                         startActivity(i)

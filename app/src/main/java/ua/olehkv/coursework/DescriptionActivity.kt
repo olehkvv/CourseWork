@@ -2,9 +2,9 @@ package ua.olehkv.coursework
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.viewpager2.widget.ViewPager2
 import ua.olehkv.coursework.adapters.ImageAdapter

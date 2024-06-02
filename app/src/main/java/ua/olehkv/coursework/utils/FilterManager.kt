@@ -2,7 +2,6 @@ package ua.olehkv.coursework.utils
 
 import ua.olehkv.coursework.model.AdFilter
 import ua.olehkv.coursework.model.Advertisement
-import java.lang.StringBuilder
 
 object FilterManager {
     fun createFilter(ad: Advertisement) : AdFilter{

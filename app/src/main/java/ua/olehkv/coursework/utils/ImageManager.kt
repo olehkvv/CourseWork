@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 
 import android.widget.ImageView
+import androidx.exifinterface.media.ExifInterface
 //import com.fxn.pix.Pix
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
@@ -15,16 +16,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.olehkv.coursework.adapters.ImageAdapter
 import ua.olehkv.coursework.model.Advertisement
+import java.io.File
 
 
 object ImageManager { // for large bitmaps
-    const val MAX_IMAGE_SIZE = 1000
+    private const val MAX_IMAGE_SIZE = 1000
     data class ImageDimension(
         val width: Int,
         val height: Int,
     )
 
-    fun getImageSize(uri: Uri, act: Activity): ImageDimension {
+    private fun getImageSize(uri: Uri, act: Activity): ImageDimension {
         val inputStream = act.contentResolver.openInputStream(uri)
 
         val options = BitmapFactory.Options().apply {
@@ -37,19 +39,17 @@ object ImageManager { // for large bitmaps
         return ImageDimension(options.outWidth, options.outHeight)
     }
 
-//    private fun imageRotation(imageFile: File): Int{
-//        val rotation: Int
-////        val imageFile = File(uri)
-//        val exif = ExifInterface(imageFile.absolutePath)
-//        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-//        rotation = if (orientation == ExifInterface.ORIENTATION_ROTATE_90
-//            || orientation == ExifInterface.ORIENTATION_ROTATE_270)
-//            90
-//        else 0
-//
-//
-//        return rotation
-//    }
+    private fun imageRotation(imageFile: File): Int{
+        val rotation: Int
+        val exif = ExifInterface(imageFile.absolutePath)
+        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+        rotation = if (orientation == ExifInterface.ORIENTATION_ROTATE_90
+            || orientation == ExifInterface.ORIENTATION_ROTATE_270)
+            90
+        else 0
+
+        return rotation
+    }
 
     fun chooseScaleType(imView: ImageView, bitmap: Bitmap){
         if (bitmap.width > bitmap.height)
@@ -76,20 +76,15 @@ object ImageManager { // for large bitmaps
                     tempList.add(ImageDimension((MAX_IMAGE_SIZE * imageRatio).toInt(), MAX_IMAGE_SIZE))
                 else tempList.add(ImageDimension(size.width, size.height))
             }
-
             Log.d("AAA", "new size: width = ${tempList[n].width}, height = ${tempList[n].height}")
-
         }
-
         for (i in uris.indices) {
             val e = runCatching {
                 val requestCreator = Picasso.get().load(uris[i])
                 val resized = requestCreator.resize(tempList[i].width, tempList[i].height).get()
                 bitmapList.add(resized)
             }
-//            Log.d("AAA", "Bitmap load done: ${e.isSuccess} ")
         }
-
         return@withContext bitmapList
     }
 
@@ -102,7 +97,6 @@ object ImageManager { // for large bitmaps
                 bitmapList.add(bitmap)
             }
         }
-
         return@withContext bitmapList
     }
 

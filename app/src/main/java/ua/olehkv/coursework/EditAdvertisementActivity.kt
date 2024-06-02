@@ -1,23 +1,30 @@
 package ua.olehkv.coursework
 
+//import com.fxn.utility.PermUtil
+import android.app.Activity
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.tasks.OnCompleteListener
-//import com.fxn.utility.PermUtil
 import ua.olehkv.coursework.MainActivity.Companion.ADS_DATA
 import ua.olehkv.coursework.MainActivity.Companion.EDIT_STATE
 import ua.olehkv.coursework.adapters.ImageAdapter
-import ua.olehkv.coursework.model.DbManager
 import ua.olehkv.coursework.databinding.ActivityEditAdvertisementBinding
 import ua.olehkv.coursework.dialogs.DialogSpinnerHelper
 import ua.olehkv.coursework.fragments.ImageListFragment
 import ua.olehkv.coursework.model.Advertisement
+import ua.olehkv.coursework.model.DbManager
 import ua.olehkv.coursework.utils.CityHelper
 import ua.olehkv.coursework.utils.ImageManager
 import ua.olehkv.coursework.utils.ImagePicker
@@ -25,7 +32,7 @@ import java.io.ByteArrayOutputStream
 
 class EditAdvertisementActivity: AppCompatActivity() {
     lateinit var binding: ActivityEditAdvertisementBinding
-    val dialog = DialogSpinnerHelper()
+    private val dialog = DialogSpinnerHelper()
     lateinit var imageAdapter: ImageAdapter
     private val dbManager = DbManager()
     var chooseImageFrag: ImageListFragment? = null
@@ -33,6 +40,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
     private var imageIndex = 0
     private var isEditState = false
     private var ad: Advertisement? = null
+    var interstitialAd: InterstitialAd? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditAdvertisementBinding.inflate(layoutInflater)
@@ -40,6 +48,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
         init()
         checkEditState()
         imageChangeCounter()
+        loadInterstitialAd()
     }
 
     private fun init() = with(binding){
@@ -86,7 +95,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
         }
 
         btPublish.setOnClickListener {
-            if (isFieldsCorrect()){
+            if (isFieldsCorrect()) {
                 progressLayout.visibility = View.VISIBLE
                 ad = fillAd()
 //            if(isEditState)
@@ -100,6 +109,7 @@ class EditAdvertisementActivity: AppCompatActivity() {
 //                uploadAllImages()
 //            }
                 uploadAllImages()
+                showInterstitialAd()
             }
         }
 
@@ -248,12 +258,12 @@ class EditAdvertisementActivity: AppCompatActivity() {
         return@with true
     }
 
-    fun isValidEmail(email: String): Boolean {
+    private fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
         return email.matches(emailRegex) && email.isNotBlank()
     }
 
-    fun isPhoneNumberValid(number: String): Boolean {
+    private fun isPhoneNumberValid(number: String): Boolean {
         return number.startsWith("+") || number.startsWith("0") && number.length >= 9
     }
 
@@ -323,5 +333,34 @@ class EditAdvertisementActivity: AppCompatActivity() {
             index = 0
         val imageCounter = "${counter + index} / $itemCount"
         binding.tvImageCounter.text = imageCounter
+    }
+
+    private fun showInterstitialAd(){
+        if(interstitialAd != null){
+            interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    finish()
+                }
+
+                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                    finish()
+                }
+            }
+        }
+        else finish()
+        interstitialAd?.show(this)
+    }
+
+    private fun loadInterstitialAd(){
+        val adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(this, getString(R.string.ad_interstitial_id), adRequest, object : InterstitialAdLoadCallback(){
+            override fun onAdLoaded(ad: InterstitialAd) {
+                super.onAdLoaded(ad)
+                interstitialAd = ad
+            }
+            override fun onAdFailedToLoad(p0: LoadAdError) {
+                super.onAdFailedToLoad(p0)
+            }
+        })
     }
 }
